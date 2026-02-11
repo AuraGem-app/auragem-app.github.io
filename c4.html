@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Para mi San Valentín ❤️</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-pink: #ff2d55;
+            --deep-red: #800f2f;
+            --gold-accent: #d4af37;
+            --night-bg: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+        }
+
+        body { 
+            background: var(--night-bg);
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            font-family: 'Quicksand', sans-serif; 
+            margin: 0;
+            overflow: hidden;
+            touch-action: none; 
+        }
+
+        /* --- FONDO DE ESTRELLAS MÁGICAS --- */
+        #stars-container {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle var(--duration) infinite ease-in-out;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); filter: blur(1px); }
+        }
+
+        /* --- TARJETA ROMÁNTICA (GLASSMORPHISM) --- */
+        .card { 
+            background: rgba(20, 10, 25, 0.7); /* Oscuro translúcido */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 40px 25px; 
+            border-radius: 40px; 
+            border: 1px solid rgba(212, 175, 55, 0.3); /* Borde dorado suave */
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 45, 85, 0.1);
+            text-align: center; 
+            width: 85%;
+            max-width: 340px;
+            position: relative;
+            z-index: 10;
+        }
+
+        h2 { 
+            color: white; 
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            margin: 15px 0 25px 0;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(255, 45, 85, 0.5);
+        }
+
+        .btns { 
+            display: flex; 
+            flex-direction: column; /* Vertical para mejor manejo del botón que huye */
+            justify-content: center; 
+            align-items: center;
+            gap: 20px;
+            min-height: 160px;
+        }
+
+        button { 
+            padding: 16px 35px; 
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Quicksand', sans-serif;
+            touch-action: manipulation;
+        }
+
+        #yes { 
+            background: linear-gradient(45deg, var(--primary-pink), var(--deep-red));
+            color: white; 
+            box-shadow: 0 10px 20px rgba(255, 45, 85, 0.4);
+            z-index: 100;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 25px rgba(255, 45, 85, 0.6);
+        }
+
+        #no { 
+            background: rgba(255, 255, 255, 0.1); 
+            color: rgba(255, 255, 255, 0.6); 
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 99;
+        }
+
+        .img-celebration {
+            width: 100%;
+            max-width: 200px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 2px solid var(--gold-accent);
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 1.5rem;
+            color: var(--primary-pink);
+            opacity: 0.6;
+            animation: float 4s infinite ease-in;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.2); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.1); }
+            60% { transform: scale(1); }
+        }
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 15px 6px 8px; /* Menos espacio a la izquierda para el logo */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .mini-logo-btn {
+            width: 30px;  /* Tamaño perfecto para el botón */
+            height: 30px;
+            border-radius: 50%; /* Asegura que se vea circular */
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Un fino borde blanco */
+        }
+
+        .btn-back .text {
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Efecto al pasar el mouse o tocar */
+        .btn-back:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">
+        <img src="logo.png" alt="AuraGem Logo" class="mini-logo-btn">
+        <span class="text">AuraGem</span>
+    </a>
+    <div id="stars-container"></div>
+
+    <div class="card" id="quiz-card">
+        <div id="content">
+            <div style="font-size: 4rem; animation: heartbeat 1.5s infinite; filter: drop-shadow(0 0 15px var(--primary-pink));">🌹</div>
+            <h2>¿Me harías el honor de ser mi San Valentín?</h2>
+            <div class="btns">
+                <button id="yes">SÍ, ACEPTO ❤️</button>
+                <button id="no">No lo sé... 🤔</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Generador de estrellas
+        const starsContainer = document.getElementById('stars-container');
+        for (let i = 0; i < 120; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+            starsContainer.appendChild(star);
+        }
+
+        // Generador de corazones flotantes
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart';
+            heart.innerHTML = '❤️';
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.bottom = '-10%';
+            heart.style.fontSize = Math.random() * 20 + 10 + 'px';
+            heart.style.duration = Math.random() * 3 + 3 + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }, 600);
+
+        const noBtn = document.getElementById('no');
+        const yesBtn = document.getElementById('yes');
+        let scaleYes = 1;
+
+        const frasesNo = ["¿Estás segura? 🧐", "¡Esa no es la respuesta! 😜", "Ups, se movió... 💨", "Piénsalo otra vez ❤️", "¡Casi lo logras! 🎯", "El destino dice que SÍ 🌹"];
+
+        function moverBotonNo(e) {
+            if(e) e.preventDefault();
+            noBtn.style.position = 'fixed';
+            const margin = 80;
+            const width = window.innerWidth - noBtn.offsetWidth - margin;
+            const height = window.innerHeight - noBtn.offsetHeight - margin;
+            const randomX = Math.random() * (width - margin) + margin;
+            const randomY = Math.random() * (height - margin) + margin;
+            noBtn.style.left = `${randomX}px`;
+            noBtn.style.top = `${randomY}px`;
+
+            scaleYes += 0.35;
+            yesBtn.style.transform = `scale(${scaleYes})`;
+            noBtn.innerText = frasesNo[Math.floor(Math.random() * frasesNo.length)];
+        }
+
+        noBtn.addEventListener('mouseenter', moverBotonNo);
+        noBtn.addEventListener('touchstart', moverBotonNo, {passive: false});
+
+        yesBtn.addEventListener('click', () => {
+            const duration = 5 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 7,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff2d55', '#d4af37', '#ffffff']
+                });
+                confetti({
+                    particleCount: 7,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff2d55', '#d4af37', '#ffffff']
+                });
+                if (Date.now() < end) requestAnimationFrame(frame);
+            }());
+
+            document.getElementById('quiz-card').innerHTML = `
+                <div style="font-size: 4rem; filter: drop-shadow(0 0 20px #ff2d55);">💖</div>
+                <h2 style="font-size: 2.5rem;">¡Eres mi felicidad! 😍</h2>
+                <p style="color: white; font-size: 1.1rem; opacity: 0.9;">No puedo esperar para celebrarlo a tu lado.</p>
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueXNidXp6eXNidXp6eXNidXp6eXNidXp6eXNidXp6eXNidSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KztT2c4u8mYYUiMKdJ/giphy.gif" class="img-celebration">
+            `;
+        });
+    </script>
+</body>
+</html>

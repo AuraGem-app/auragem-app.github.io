@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Regalo para Ti</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-caja: #ff4d6d;
+            --color-tapa: #ff758f;
+            --color-lazo: #ffffff;
+            --color-glow: rgba(255, 77, 109, 0.8);
+        }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: radial-gradient(circle at center, #2d1b33 0%, #120c17 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .escena {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Contenedor del Regalo */
+        .regalo {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            cursor: pointer;
+            z-index: 50; /* Prioridad alta */
+            animation: flotar 3s ease-in-out infinite;
+            transition: all 0.6s ease;
+        }
+
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(3deg); }
+        }
+
+        /* La Caja (Abajo) */
+        .caja-base {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(135deg, var(--color-caja), #c9184a);
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            z-index: 1; 
+        }
+
+        /* La Tapa (Arriba y al Frente) */
+        .tapa {
+            position: absolute;
+            top: 0;
+            left: -10px;
+            width: 160px;
+            height: 40px;
+            background: var(--color-tapa);
+            border-radius: 8px;
+            z-index: 10; /* Z-index mayor que la caja base */
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        /* Lazos */
+        .lazo-v {
+            position: absolute;
+            width: 20px;
+            height: 100%;
+            background: var(--color-lazo);
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+        }
+
+        .lazo-h {
+            position: absolute;
+            width: 100%;
+            height: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--color-lazo);
+        }
+
+        /* Mensaje */
+        .mensaje {
+            position: absolute;
+            z-index: 100;
+            text-align: center;
+            color: white;
+            opacity: 0;
+            transform: scale(0);
+            transition: 1s all cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            width: 85%;
+            pointer-events: none;
+        }
+
+        .mensaje h1 { 
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem; 
+            margin: 0 0 10px 0;
+            color: #ffb3c1;
+            text-shadow: 0 0 20px var(--color-glow);
+        }
+
+        .mensaje p { font-size: 1.2rem; margin: 0; font-weight: 300; }
+
+        /* Estados de apertura */
+        .abierto .tapa {
+            transform: translateY(-250px) rotate(-15deg) scale(0.8);
+            opacity: 0;
+        }
+
+        .abierto .caja-base {
+            transform: translateY(150px) scale(0);
+            opacity: 0;
+            transition: 0.6s all ease;
+        }
+
+        .abierto .mensaje {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        /* Partículas */
+        .particula {
+            position: absolute;
+            pointer-events: none;
+            z-index: 200;
+            animation: volar 2.5s ease-out forwards;
+        }
+
+        @keyframes volar {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(var(--x), var(--y)) scale(1.2) rotate(var(--r)); opacity: 0; }
+        }
+
+        @media (max-width: 600px) {
+            .mensaje h1 { font-size: 2.5rem; }
+            .mensaje p { font-size: 1rem; }
+            .regalo { width: 120px; height: 120px; }
+            .tapa { width: 140px; }
+        }
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 15px 6px 8px; /* Menos espacio a la izquierda para el logo */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .mini-logo-btn {
+            width: 30px;  /* Tamaño perfecto para el botón */
+            height: 30px;
+            border-radius: 50%; /* Asegura que se vea circular */
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Un fino borde blanco */
+        }
+
+        .btn-back .text {
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Efecto al pasar el mouse o tocar */
+        .btn-back:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">
+        <img src="logo.png" alt="AuraGem Logo" class="mini-logo-btn">
+        <span class="text">AuraGem</span>
+    </a>
+    <div class="escena" id="escena">
+        <div class="regalo" id="regalo" onclick="abrirRegalo()" ontouchstart="abrirRegalo()">
+            <div class="tapa">
+                <div class="lazo-v"></div>
+            </div>
+            <div class="caja-base">
+                <div class="lazo-v"></div>
+                <div class="lazo-h"></div>
+            </div>
+        </div>
+
+        <div class="mensaje" id="texto">
+            <h1>¡Eres muy especial para mi! ❤️</h1>
+            <p>Gracias por hacer mi mundo mucho mejor.</p>
+        </div>
+    </div>
+
+    <script>
+        function abrirRegalo() {
+            const escena = document.getElementById('escena');
+            if (escena.classList.contains('abierto')) return;
+
+            escena.classList.add('abierto');
+            
+            for (let i = 0; i < 50; i++) {
+                crearParticula();
+            }
+        }
+
+        function crearParticula() {
+            const p = document.createElement('div');
+            p.className = 'particula';
+            p.innerHTML = Math.random() > 0.5 ? '❤️' : '💖';
+            
+            const x = (Math.random() - 0.5) * (window.innerWidth < 600 ? 500 : 800);
+            const y = (Math.random() - 0.5) * (window.innerHeight < 600 ? 500 : 800);
+            const r = Math.random() * 360;
+            
+            p.style.setProperty('--x', `${x}px`);
+            p.style.setProperty('--y', `${y}px`);
+            p.style.setProperty('--r', `${r}deg`);
+            p.style.left = '50%';
+            p.style.top = '50%';
+            p.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 2500);
+        }
+    </script>
+</body>
+</html>

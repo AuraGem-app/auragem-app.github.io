@@ -1,0 +1,319 @@
+:root {
+    --gold: #d4af37;
+    --dark: #0a0104;
+    --glass: rgba(255, 255, 255, 0.95);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.main-card {
+    width: 90%;
+    max-width: 380px;
+    background: var(--glass);
+    padding: 40px 20px;
+    border-radius: 40px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+}
+
+.reveal-title {
+    font-family: 'Playfair Display', serif;
+    letter-spacing: 4px;
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.subtitle {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    color: var(--gold);
+    font-size: 0.8rem;
+}
+
+.divider {
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+    margin: 20px auto 30px;
+}
+
+/* Rejilla de Cuadros */
+.gem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.gem-item {
+    aspect-ratio: 1/1;
+    background: white;
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: transform 0.2s ease;
+}
+
+.gem-item:active { transform: scale(0.96); }
+
+/* Estilo para el cuadro C1 (El Portal) */
+.portal-bg {
+    background: var(--dark);
+}
+
+.heart {
+    font-size: 40px;
+    animation: pulse 1.5s infinite ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 45, 85, 0.5));
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* Imágenes de vista previa */
+.preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.gem-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.6));
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 12px;
+}
+
+.gem-overlay span {
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Botón y Footer */
+.btn-final {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 16px;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+/* Estilo para el cuadro C2 (El Regalo) */
+.gift-bg {
+    background: radial-gradient(circle at center, #2d1b33 0%, #120c17 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Miniatura del Regalo */
+.mini-regalo {
+    position: relative;
+    width: 60px; /* Tamaño reducido para el cuadro */
+    height: 60px;
+    animation: mini-flotar 3s ease-in-out infinite;
+}
+
+@keyframes mini-flotar {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(3deg); }
+}
+
+.mini-caja-base {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 45px;
+    background: linear-gradient(135deg, #ff4d6d, #c9184a);
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+.mini-tapa {
+    position: absolute;
+    top: 0;
+    left: -5%;
+    width: 110%;
+    height: 15px;
+    background: #ff758f;
+    border-radius: 4px;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Lazos mini */
+.mini-lazo-v {
+    position: absolute;
+    width: 8px;
+    height: 100%;
+    background: white;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.mini-lazo-h {
+    position: absolute;
+    width: 100%;
+    height: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: white;
+}
+
+/* Estilo para el cuadro C3 (Corazón de Partículas) */
+.heart-particle-bg {
+    background: radial-gradient(circle at center, #1a0033 0%, #000000 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* El texto con gradiente animado */
+.mini-te-amo {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    font-size: 0.8rem;
+    margin: 0;
+    margin-top: 5px;
+    background: linear-gradient(90deg, #ff0055, #bc13fe, #ffffff, #ff0055);
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: moveGradient 3s linear infinite;
+    letter-spacing: 1px;
+}
+
+@keyframes moveGradient {
+    to { background-position: 300% center; }
+}
+
+/* El corazón palpitante */
+.mini-heart-glow {
+    width: 30px;
+    height: 30px;
+    background: #ff0055;
+    clip-path: path('M15 27.2l-1.45-1.32C5.4 18.36 0 13.46 0 7.5 0 2.69 3.79 0 8.5 0c2.66 0 5.21 1.24 6.5 3.19A8.456 8.456 0 0 1 21.5 0c4.71 0 8.5 2.69 8.5 7.5 0 5.96-5.4 10.86-13.55 18.39L15 27.2z');
+    animation: heartBeat 1.5s ease-in-out infinite;
+    filter: drop-shadow(0 0 10px #bc13fe);
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Partículas decorativas estáticas */
+.particle-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.p {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0.6;
+}
+
+.p1 { top: -10px; left: -15px; background: #bc13fe; animation: heartBeat 1.5s infinite 0.2s; }
+.p2 { top: 15px; right: -20px; background: #ff0055; animation: heartBeat 1.5s infinite 0.4s; }
+.p3 { bottom: -10px; left: 5px; background: #ffffff; animation: heartBeat 1.5s infinite 0.6s; }
+
+
+/* Estilo para el cuadro C4 (Versión Night & Gold) */
+.night-gold-bg {
+    background: linear-gradient(135deg, #0f0c29 0%, #24243e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(212, 175, 55, 0.2); /* Toque dorado */
+}
+
+.mini-night-card {
+    background: rgba(255, 255, 255, 0.05);
+    width: 80%;
+    height: 80%;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.mini-rose {
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 10px #ff2d55);
+    animation: mini-heartbeat 1.5s infinite;
+}
+
+.mini-yes-btn {
+    background: linear-gradient(45deg, #ff2d55, #800f2f);
+    color: white;
+    font-size: 0.5rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(255, 45, 85, 0.3);
+}
+
+/* Estrellas decorativas en la vista previa */
+.mini-stars .ms {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+.ms:nth-child(1) { top: 20%; left: 20%; animation: twinkle 2s infinite; }
+.ms:nth-child(2) { top: 15%; right: 25%; animation: twinkle 3s infinite 1s; }
+.ms:nth-child(3) { bottom: 20%; right: 20%; animation: twinkle 2.5s infinite 0.5s; }
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+@keyframes mini-heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+footer { margin-top: 25px; font-size: 0.6rem; color: #aaa; letter-spacing: 2px; }

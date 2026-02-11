@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Un Regalo para Ti ❤️</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #d4af37;
+            --bright-red: #ff2d55;
+            --bg-dark: #0a0104;
+        }
+
+        body {
+            background: var(--bg-dark);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+            overflow: hidden;
+            /* Crucial para móviles: evita gestos del sistema */
+            touch-action: none; 
+        }
+
+        #stars-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .main-card {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 85%;
+            max-width: 340px;
+        }
+
+        /* El círculo de carga */
+        .unlock-portal {
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 30px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .portal-ring {
+            position: absolute;
+            top: 0; left: 0;
+            transform: rotate(-90deg);
+        }
+
+        .portal-ring circle {
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 4;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.1s linear;
+        }
+
+        .heart-trigger {
+            font-size: 50px;
+            filter: drop-shadow(0 0 15px var(--bright-red));
+            user-select: none;
+        }
+
+        .beating {
+            animation: heartPulse 1.2s infinite;
+        }
+
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        .hint {
+            font-size: 0.75rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: 0.5;
+            margin-top: 10px;
+        }
+
+        /* Pantalla Final */
+        #final-msg {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease-out;
+        }
+
+        .reveal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+
+        .btn-confirm {
+            background: transparent;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 12px 40px;
+            border-radius: 50px;
+            font-size: 1rem;
+            margin-top: 30px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-confirm:active {
+            background: var(--gold);
+            color: black;
+        }
+        .btn-back {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 15px 6px 8px; /* Menos espacio a la izquierda para el logo */
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .mini-logo-btn {
+            width: 30px;  /* Tamaño perfecto para el botón */
+            height: 30px;
+            border-radius: 50%; /* Asegura que se vea circular */
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Un fino borde blanco */
+        }
+
+        .btn-back .text {
+            color: white;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Efecto al pasar el mouse o tocar */
+        .btn-back:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-back">
+        <img src="logo.png" alt="AuraGem Logo" class="mini-logo-btn">
+        <span class="text">AuraGem</span>
+    </a>
+
+    <div id="stars-container"></div>
+
+    <div class="main-card" id="intro">
+        <div class="unlock-portal" id="btn-touch">
+            <svg class="portal-ring" width="130" height="130">
+                <circle id="loader" r="60" cx="65" cy="65"></circle>
+            </svg>
+            <div class="heart-trigger beating">❤️</div>
+        </div>
+        <p class="hint">Mantén presionado para revelar</p>
+    </div>
+
+    <div class="main-card" id="final-msg">
+        <h1 class="reveal-title">Eres mi mejor casualidad</h1>
+        <p style="line-height: 1.6; font-weight: 300;">
+            No se trata de encontrar a la persona adecuada, se trata de haberte encontrado a ti y no querer buscar en ningún otro lado <br>
+            
+        </p>
+        <div style="font-size: 2.5rem; margin: 20px 0;">🌹</div>
+        <h3 style="letter-spacing: 2px; font-weight: 600;">¿Quieres ser mi San Valentín?</h3>
+        
+        <button class="btn-confirm" id="btn-final">SÍ, ACEPTO</button>
+    </div>
+
+    <script>
+        const btnTouch = document.getElementById('btn-touch');
+        const loader = document.getElementById('loader');
+        const intro = document.getElementById('intro');
+        const finalMsg = document.getElementById('final-msg');
+        
+        let pressTimer;
+        let charge = 0;
+        const limit = 377; // Circunferencia del círculo
+
+        function startPress(e) {
+            e.preventDefault();
+            pressTimer = setInterval(() => {
+                charge += 4;
+                if (charge <= 100) {
+                    const offset = limit - (charge / 100) * limit;
+                    loader.style.strokeDashoffset = offset;
+                } else {
+                    complete();
+                }
+            }, 30);
+        }
+
+        function stopPress() {
+            clearInterval(pressTimer);
+            if (charge < 100) {
+                charge = 0;
+                loader.style.strokeDashoffset = limit;
+            }
+        }
+
+        function complete() {
+            clearInterval(pressTimer);
+            // Vibración sutil en móviles si está disponible
+            if(navigator.vibrate) navigator.vibrate(100);
+
+            intro.style.opacity = '0';
+            intro.style.transform = 'scale(1.2)';
+            
+            setTimeout(() => {
+                intro.style.display = 'none';
+                finalMsg.style.display = 'block';
+                setTimeout(() => {
+                    finalMsg.style.opacity = '1';
+                    finalMsg.style.transform = 'translateY(0)';
+                }, 100);
+            }, 600);
+        }
+
+        document.getElementById('btn-final').addEventListener('click', function() {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#d4af37', '#ffffff', '#ff2d55']
+            });
+            this.innerText = "❤️";
+            this.style.border = "none";
+        });
+
+        // Eventos táctiles y mouse
+        btnTouch.addEventListener('touchstart', startPress);
+        btnTouch.addEventListener('touchend', stopPress);
+        btnTouch.addEventListener('mousedown', startPress);
+        btnTouch.addEventListener('mouseup', stopPress);
+
+        // Fondo de estrellas
+        const container = document.getElementById('stars-container');
+        for (let i = 0; i < 40; i++) {
+            const star = document.createElement('div');
+            star.style.position = 'absolute';
+            star.style.width = '2px';
+            star.style.height = '2px';
+            star.style.background = 'white';
+            star.style.borderRadius = '50%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.opacity = Math.random() * 0.7;
+            container.appendChild(star);
+        }
+    </script>
+
+</body>
+</html>
