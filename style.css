@@ -315,5 +315,40 @@ body {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
 }
+/* Estilo para el fondo del quinto cuadro (Espacio Neón) */
+.game-neon-bg {
+    background: radial-gradient(circle at center, #1a051a, #000);
+    border: 1px solid var(--pink);
+    overflow: hidden;
+    position: relative;
+}
 
+/* Animación del mini cohete */
+.mini-rocket {
+    font-size: 1.5rem;
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 5px var(--pink));
+    animation: floatRocket 2s ease-in-out infinite;
+}
+
+@keyframes floatRocket {
+    0%, 100% { bottom: 10px; transform: translateX(-50%) rotate(0deg); }
+    50% { bottom: 15px; transform: translateX(-50%) rotate(-5deg); }
+}
+
+/* Mini elementos cayendo (decorativos) */
+.game-particle {
+    position: absolute;
+    font-size: 0.8rem;
+    top: -20px;
+    opacity: 0.6;
+    animation: fallLinear 3s linear infinite;
+}
+
+@keyframes fallLinear {
+    to { top: 110%; }
+}
 footer { margin-top: 25px; font-size: 0.6rem; color: #aaa; letter-spacing: 2px; }

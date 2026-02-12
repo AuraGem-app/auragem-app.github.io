@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Love Survivor: Pro Edition ❤️</title>
+    <style>
+        :root { 
+            --pink: #ff4d6d; --easy: #00ff88; --med: #ffaa00; 
+            --hard: #ff0044; --potion: #00f2ff; --shield: #fbff00; 
+            --bright-red: #ff2d55;
+        }
+
+        /* RESTAURACIÓN DEL BOTÓN ORIGINAL AURAGEM */
+        .btn-back {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.08); /* Efecto cristal */
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            opacity: 1;
+        }
+
+        /* Lógica para ocultar con suavidad */
+        .btn-back.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.9) translateY(-10px);
+        }
+
+        .btn-back:hover, .btn-back:active {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--bright-red);
+        }
+
+        .mini-logo-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #ff0055, #bc13fe);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-back .text {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* ESTILOS BASE DEL JUEGO */
+        * { box-sizing: border-box; touch-action: none; user-select: none; margin: 0; padding: 0; }
+
+        body {
+            background: #050005; color: white;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            overflow: hidden; height: 100vh; width: 100vw;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        #game-container {
+            position: relative; width: 100vw; max-width: 500px; height: 100vh;
+            background: radial-gradient(circle at center, #1a051a, #000);
+            border-left: 2px solid var(--pink); border-right: 2px solid var(--pink);
+            overflow: hidden;
+        }
+
+        #ui {
+            position: absolute; top: 40px; width: 100%;
+            display: flex; justify-content: space-around;
+            z-index: 100; font-weight: bold; text-shadow: 0 0 10px #000;
+        }
+
+        #player {
+            position: absolute; bottom: 80px; left: 50%;
+            font-size: 55px; transform: translateX(-50%);
+            z-index: 50; will-change: left;
+        }
+
+        #tuto-move-hint {
+            position: absolute; bottom: 160px; width: 100%;
+            text-align: center; font-size: 0.9rem; color: var(--potion);
+            text-transform: uppercase; letter-spacing: 2px;
+            animation: pulse 1.5s infinite; pointer-events: none; z-index: 100;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .entity { position: absolute; font-size: 40px; will-change: transform; pointer-events: none; }
+        .rock { animation: spin 0.8s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .modal {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.96);
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; z-index: 200; padding: 20px;
+        }
+
+        .menu-title {
+            color: var(--pink); font-size: 1.8rem; font-weight: 900;
+            text-transform: uppercase; text-shadow: 0 0 15px var(--pink);
+        }
+
+        .difficulty-card {
+            width: 100%; max-width: 340px; background: rgba(255,255,255,0.05);
+            border: 2px solid transparent; border-radius: 15px;
+            padding: 15px; margin-bottom: 12px; cursor: pointer;
+            display: flex; align-items: center; gap: 15px; transition: 0.3s;
+        }
+
+        .card-tuto { border-color: var(--potion); }
+        .card-easy { border-color: var(--easy); }
+        .card-med { border-color: var(--med); }
+        .card-hard { border-color: var(--hard); }
+        .card-info h3 { font-size: 1.1rem; text-transform: uppercase; }
+        .card-info p { font-size: 0.8rem; opacity: 0.7; }
+
+        /* CENTRADO DEL TUTORIAL ARREGLADO */
+        #tutorial-overlay {
+            position: absolute; 
+            bottom: 220px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 85%; 
+            max-width: 400px;
+            background: rgba(0,0,0,0.95); 
+            border: 2px solid var(--potion);
+            padding: 25px 20px; 
+            border-radius: 20px; 
+            text-align: center;
+            z-index: 300; 
+            display: none;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+        }
+
+        .btn-reload {
+            background: var(--pink); color: white; border: none;
+            padding: 15px 40px; font-size: 1.2rem; border-radius: 50px;
+            font-weight: bold; margin-top: 20px; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="btn-back" id="btnBack">
+        <img src="logo.png" alt="" class="mini-logo-btn" onerror="this.style.display='block'">
+        <span class="text">AuraGem</span>
+    </a>
+
+    <div id="game-container">
+        <div id="ui">
+            <div>PROGRESO: <span id="score">0</span>%</div>
+            <div id="lives">❤️❤️❤️</div>
+        </div>
+
+        <div id="player">🚀</div>
+        <div id="tuto-move-hint" style="display:none">↔️ Desliza para moverte ↔️</div>
+
+        <div id="tutorial-overlay">
+            <p id="tuto-text" style="font-size: 1.1rem; margin-bottom: 15px; line-height: 1.4;"></p>
+            <small style="color: var(--potion); font-weight: bold; letter-spacing: 1px;">TOCA PARA CONTINUAR</small>
+        </div>
+
+        <div id="menu-modal" class="modal">
+            <h1 class="menu-title">Love Survivor</h1>
+            <p style="margin-bottom:25px; opacity:0.7">Esquiva los problemas, atrapa el amor.</p>
+            
+            <div class="difficulty-card card-tuto" onclick="startTutorial()">
+                <div style="font-size: 2.2rem;">📖</div>
+                <div class="card-info">
+                    <h3 style="color: var(--potion)">Academia de Vuelo</h3>
+                    <p>Tutorial: Aprende a pilotar tu cohete.</p>
+                </div>
+            </div>
+
+            <div class="difficulty-card card-easy" onclick="setupGame('easy')">
+                <div style="font-size: 2.2rem;">🍃</div>
+                <div class="card-info"><h3 style="color: var(--easy)">Modo Chill</h3><p>Velocidad relajada.</p></div>
+            </div>
+            <div class="difficulty-card card-med" onclick="setupGame('med')">
+                <div style="font-size: 2.2rem;">⚡</div>
+                <div class="card-info"><h3 style="color: var(--med)">Superviviente</h3><p>Dificultad progresiva.</p></div>
+            </div>
+            <div class="difficulty-card card-hard" onclick="setupGame('hard')">
+                <div style="font-size: 2.2rem;">💀</div>
+                <div class="card-info"><h3 style="color: var(--hard)">Pesadilla</h3><p>Rocas inteligentes.</p></div>
+            </div>
+        </div>
+
+        <div id="end-modal" class="modal" style="display:none">
+            <h1 id="end-title" style="font-size: 2.2rem; text-align:center"></h1>
+            <p id="end-msg" style="margin: 20px 0; text-align: center;"></p>
+            <button class="btn-reload" onclick="location.reload()">VOLVER AL INICIO</button>
+        </div>
+    </div>
+
+    <script>
+        const container = document.getElementById('game-container');
+        const player = document.getElementById('player');
+        const scoreDisplay = document.getElementById('score');
+        const livesDisplay = document.getElementById('lives');
+        const tutoOverlay = document.getElementById('tutorial-overlay');
+        const tutoText = document.getElementById('tuto-text');
+        const btnBack = document.getElementById('btnBack');
+        const moveHint = document.getElementById('tuto-move-hint');
+        
+        let score = 0, lives = 3, active = false, isTutorial = false;
+        let config = { speed: 5, accel: 0.1, spawnRate: 800, rockHoming: false, penalty: 2 };
+        let currentSpeed = 5, hasShield = false, tutoStep = 0;
+
+        // Movimiento Suave (Lerp)
+        let targetX = window.innerWidth / 2;
+        let currentX = window.innerWidth / 2;
+
+        function updatePosition() {
+            if (active) {
+                currentX += (targetX - currentX) * 0.15;
+                player.style.left = `${currentX}px`;
+            }
+            requestAnimationFrame(updatePosition);
+        }
+        updatePosition();
+
+        container.addEventListener('pointermove', (e) => {
+            if (!active) return;
+            const rect = container.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            targetX = Math.max(40, Math.min(rect.width - 40, x));
+            if (isTutorial) moveHint.style.display = 'none';
+        });
+
+        const tutorialSteps = [
+            { icon: '❤️', text: "Los CORAZONES suben tu barra de progreso. ¡Atrápalos!", type: 'good' },
+            { icon: '🪨', text: "Las ROCAS son fatales. Un solo choque y pierdes el juego.", type: 'death' },
+            { icon: '🛡️', text: "El ESCUDO te da una segunda oportunidad contra las rocas.", type: 'shield' },
+            { icon: '🚫', text: "Las RED FLAGS te quitan una vida. ¡Solo tienes tres!", type: 'bad' }
+        ];
+
+        function startTutorial() { 
+            isTutorial = true; active = true; 
+            btnBack.classList.add('hidden');
+            moveHint.style.display = 'block';
+            document.getElementById('menu-modal').style.display = 'none'; 
+            nextTutoStep(); 
+        }
+
+        function nextTutoStep() {
+            if (tutoStep >= tutorialSteps.length) { isTutorial = false; finish("tuto_end"); return; }
+            const step = tutorialSteps[tutoStep];
+            spawnTutoEntity(step.icon, step.type, step.text);
+        }
+
+        function spawnTutoEntity(icon, type, text) {
+            const el = document.createElement('div');
+            el.className = 'entity' + (type === 'death' ? ' rock' : '');
+            el.innerHTML = icon; el.dataset.type = type; el.style.left = '50%'; el.style.top = '-60px';
+            container.appendChild(el);
+
+            let fall = setInterval(() => {
+                let y = parseFloat(el.style.top); el.style.top = (y + 4) + 'px';
+                if (y > 180 && tutoOverlay.style.display !== 'block') {
+                    clearInterval(fall); tutoText.innerText = text; tutoOverlay.style.display = 'block';
+                    const resume = () => {
+                        tutoOverlay.style.display = 'none'; container.removeEventListener('pointerdown', resume);
+                        fall = setInterval(() => {
+                            let y2 = parseFloat(el.style.top); el.style.top = (y2 + 8) + 'px';
+                            if (checkCollision(el, fall, true)) return;
+                            if (y2 > container.clientHeight) { clearInterval(fall); el.remove(); tutoStep++; nextTutoStep(); }
+                        }, 16);
+                    };
+                    container.addEventListener('pointerdown', resume);
+                }
+            }, 16);
+        }
+
+        function setupGame(difficulty) {
+            isTutorial = false;
+            if (difficulty === 'easy') config = { speed: 4.5, accel: 0.05, spawnRate: 1000, rockHoming: false, penalty: 1 };
+            else if (difficulty === 'med') config = { speed: 6.5, accel: 0.25, spawnRate: 700, rockHoming: false, penalty: 3 };
+            else config = { speed: 9, accel: 0.5, spawnRate: 500, rockHoming: true, penalty: 6 };
+            currentSpeed = config.speed; startGame();
+        }
+
+        function startGame() { 
+            active = true; btnBack.classList.add('hidden');
+            document.getElementById('menu-modal').style.display = 'none'; createEntity(); 
+        }
+
+        function createEntity() {
+            if (!active || isTutorial) return;
+            const el = document.createElement('div'); el.className = 'entity';
+            const rnd = Math.random();
+            if (rnd > 0.55) { el.innerHTML = '❤️'; el.dataset.type = 'good'; }
+            else if (rnd > 0.30) { el.innerHTML = '🪨'; el.className += ' rock'; el.dataset.type = 'death'; }
+            else if (rnd > 0.15) { el.innerHTML = '🚫'; el.dataset.type = 'bad'; }
+            else if (rnd > 0.08) { el.innerHTML = '🛡️'; el.dataset.type = 'shield'; }
+            else { el.innerHTML = '🧪'; el.dataset.type = 'potion'; }
+
+            const startX = Math.random() * (container.clientWidth - 50);
+            el.style.left = startX + 'px'; el.style.top = '-60px';
+            container.appendChild(el);
+
+            let drift = (config.rockHoming && el.dataset.type === 'death') ? (currentX - startX) * 0.02 : 0;
+
+            function fall() {
+                if (!active || !el.parentNode) return;
+                let y = parseFloat(el.style.top) + currentSpeed;
+                el.style.top = y + 'px'; el.style.left = (parseFloat(el.style.left) + drift) + 'px';
+                if (!checkCollision(el, fall)) {
+                    if (y > container.clientHeight) {
+                        if (el.dataset.type === 'good') { score = Math.max(0, score - config.penalty); scoreDisplay.innerText = score; }
+                        el.remove();
+                    } else requestAnimationFrame(fall);
+                }
+            }
+            requestAnimationFrame(fall);
+            setTimeout(createEntity, Math.max(120, config.spawnRate - (score * 6)));
+        }
+
+        function checkCollision(el, interval, isTuto) {
+            const pR = player.getBoundingClientRect(), eR = el.getBoundingClientRect();
+            if (eR.top < pR.bottom - 20 && eR.bottom > pR.top + 20 && eR.left < pR.right - 20 && eR.right > pR.left + 20) {
+                if (isTuto) { el.remove(); clearInterval(interval); tutoStep++; nextTutoStep(); return true; }
+                handleCollision(el.dataset.type); el.remove(); return true;
+            }
+            return false;
+        }
+
+        function handleCollision(type) {
+            if (type === 'good') { score += 5; currentSpeed += config.accel; if (score >= 100) finish("win"); }
+            else if (type === 'bad') { if(hasShield) { toggleShield(false); return; } lives--; }
+            else if (type === 'death') { if(hasShield) { toggleShield(false); return; } finish("rock"); return; }
+            else if (type === 'shield') toggleShield(true);
+            else if (type === 'potion') { let oldS = currentSpeed; currentSpeed *= 1.8; setTimeout(() => currentSpeed = oldS, 2000); }
+            livesDisplay.innerText = "❤️".repeat(Math.max(0, lives));
+            scoreDisplay.innerText = Math.min(score, 100);
+            if (lives <= 0) finish("lose");
+        }
+
+        function toggleShield(state) { hasShield = state; player.style.filter = state ? 'drop-shadow(0 0 20px var(--shield)) brightness(1.3)' : 'none'; }
+
+        function finish(reason) {
+            active = false; btnBack.classList.remove('hidden');
+            const m = document.getElementById('end-modal'), t = document.getElementById('end-title'), msg = document.getElementById('end-msg');
+            m.style.display = 'flex';
+            if (reason === "win") { t.innerText = "¡VICTORIA TOTAL! ❤️"; msg.innerHTML = "Nada puede detener este vuelo.<br><b>¿Aceptarías ser mi Valentín?</b>"; }
+            else if (reason === "tuto_end") { t.innerText = "LISTO PARA DESPEGAR"; msg.innerText = "Tutorial completado. Elige un nivel."; }
+            else { t.innerText = "MISIÓN FALLIDA"; msg.innerText = reason === "rock" ? "Impacto crítico. El amor requiere reflejos." : "Demasiados errores acumulados."; }
+        }
+    </script>
+</body>
+</html>
