@@ -3,183 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Corazón y Texto de Partículas</title>
+    <title>AuraGem - Final Edition</title>
     <style>
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background: #000;
-            font-family: 'Segoe UI', sans-serif;
-            touch-action: none;
-        }
-
-        canvas { 
-            display: block; 
-            z-index: 1;
-        }
-
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; touch-action: none; }
+        canvas { display: block; position: absolute; top: 0; left: 0; }
+        
+        /* BOTÓN CORREGIDO */
         .btn-back {
-            position: fixed; top: 20px; left: 20px; z-index: 9999;
-            display: flex; align-items: center; gap: 8px;
-            padding: 6px 14px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: fixed; 
+            top: 25px; 
+            left: 25px; 
+            z-index: 9999; /* Máxima prioridad visual */
+            display: flex; 
+            align-items: center; 
+            gap: 12px;
+            padding: 10px 20px; 
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2); 
             border-radius: 50px;
-            text-decoration: none;
+            text-decoration: none; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .mini-logo-btn { width: 26px; height: 26px; border-radius: 50%; object-fit: cover; }
-        .btn-back .text { color: white; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .btn-back:hover { 
+            background: rgba(255, 255, 255, 0.15); 
+            border-color: #ff0055; 
+            transform: scale(1.05);
+        }
+
+        /* Si el logo no carga, este círculo se verá como respaldo */
+        .mini-logo-btn { 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%; 
+            object-fit: cover;
+            background: linear-gradient(45deg, #ff0055, #bc13fe); 
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+
+        .btn-back .text { 
+            color: white; 
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            letter-spacing: 1.5px; 
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.95) 100%);
+            pointer-events: none; z-index: 5;
+        }
     </style>
 </head>
 <body>
+    <div class="vignette"></div>
+
     <a href="index.html" class="btn-back">
-        <img src="logo.png" alt="Logo" class="mini-logo-btn">
+        <img src="logo.png" alt="" class="mini-logo-btn" onerror="this.style.display='block'">
         <span class="text">AuraGem</span>
     </a>
 
-    <canvas id="heartCanvas"></canvas>
+    <canvas id="canvas"></canvas>
 
-    <script>
-        const canvas = document.getElementById('heartCanvas');
-        const ctx = canvas.getContext('2d');
+<script>
+// El resto del código de las partículas y estrellas fugaces se mantiene igual
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d", { alpha: false });
 
-        let particles = [];
-        let textPoints = [];
-        let tick = 0;
-        let mouse = { x: -1000, y: -1000, radiusSq: 3000 };
-        
-        const colors = ['#ff0055', '#ff85a1', '#bc13fe', '#ffffff'];
+let particles = [], textPoints = [], stars = [], shootingStars = [];
+let tick = 0, modeTimer = 0, globalMode = "heart";
+let mouse = { x: -1000, y: -1000, active: false, burst: 0 };
+const colors = ["#ff0055", "#bc13fe", "#48dbfb", "#ffffff"];
+const sprites = {};
 
-        // 1. Función para obtener puntos del texto
-        function getTextPoints(text) {
-            const tempCanvas = document.createElement('canvas');
-            const tempCtx = tempCanvas.getContext('2d');
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            tempCanvas.width = w;
-            tempCanvas.height = h;
+function createSprites() {
+    colors.forEach(color => {
+        const sCanvas = document.createElement('canvas');
+        sCanvas.width = 20; sCanvas.height = 20;
+        const sCtx = sCanvas.getContext('2d');
+        sCtx.fillStyle = color;
+        sCtx.shadowBlur = color === "#ffffff" ? 10 : 4;
+        sCtx.shadowColor = color;
+        const x = 10, y = 8, sz = 4;
+        sCtx.beginPath();
+        sCtx.moveTo(x, y);
+        sCtx.bezierCurveTo(x, y-sz, x-sz, y-sz, x-sz, y);
+        sCtx.bezierCurveTo(x-sz, y+sz, x, y+sz*1.5, x, y+sz*2);
+        sCtx.bezierCurveTo(x, y+sz*1.5, x+sz, y+sz, x+sz, y);
+        sCtx.bezierCurveTo(x+sz, y-sz, x, y-sz, x, y);
+        sCtx.fill();
+        sprites[color] = sCanvas;
+    });
+}
 
-            // Configuración del texto
-            const fontSize = Math.min(w / 6, 120);
-            tempCtx.font = `900 ${fontSize}px Arial`;
-            tempCtx.textAlign = 'center';
-            tempCtx.textBaseline = 'middle';
-            tempCtx.fillStyle = 'white';
-            tempCtx.fillText(text, w / 2, h / 2);
+function init() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    createSprites();
+    stars = Array.from({length: 80}, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        s: Math.random() * 1.2,
+        p: Math.random() * Math.PI
+    }));
 
-            const imageData = tempCtx.getImageData(0, 0, w, h).data;
-            const points = [];
-            // Escaneamos el canvas buscando píxeles blancos (el texto)
-            const step = window.innerWidth < 600 ? 4 : 6; // Densidad de partículas en texto
-            for (let y = 0; y < h; y += step) {
-                for (let x = 0; x < w; x += step) {
-                    if (imageData[(y * w + x) * 4] > 128) {
-                        points.push({ x, y });
-                    }
-                }
+    const tCanvas = document.createElement("canvas");
+    const tCtx = tCanvas.getContext("2d");
+    tCanvas.width = canvas.width; tCanvas.height = canvas.height;
+    const fontSize = Math.min(canvas.width / 4.5, 120);
+    tCtx.font = `900 ${fontSize}px serif`;
+    tCtx.textAlign = "center";
+    tCtx.textBaseline = "middle";
+    tCtx.fillText("TE AMO", canvas.width / 2, canvas.height / 2);
+
+    const data = tCtx.getImageData(0, 0, canvas.width, canvas.height).data;
+    textPoints = [];
+    for (let y = 0; y < canvas.height; y += 5) {
+        for (let x = 0; x < canvas.width; x += 5) {
+            if (data[(y * canvas.width + x) * 4 + 3] > 128) textPoints.push({ x, y });
+        }
+    }
+    particles = [];
+    const count = Math.max(textPoints.length, 1500);
+    for (let i = 0; i < count; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: 0, vy: 0,
+            color: colors[i % colors.length],
+            angle: Math.random() * Math.PI * 2,
+            speed: 0.01 + Math.random() * 0.02,
+            tIdx: i % textPoints.length,
+            waveOffset: Math.random() * Math.PI * 2
+        });
+    }
+}
+
+function createShootingStar() {
+    shootingStars.push({
+        x: Math.random() * canvas.width,
+        y: -50,
+        len: 20 + Math.random() * 30,
+        speed: 8 + Math.random() * 10,
+        alpha: 1,
+        angle: Math.PI/4 + (Math.random()*0.2)
+    });
+}
+
+function draw() {
+    ctx.fillStyle = `rgba(5, 0, 8, ${0.25 + mouse.burst * 0.15})`;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    tick += 0.03;
+    modeTimer += 0.02;
+    if(mouse.burst > 0) mouse.burst -= 0.04;
+    if(modeTimer > 10) { globalMode = globalMode === "heart" ? "text" : "heart"; modeTimer = 0; }
+
+    stars.forEach(s => {
+        ctx.fillStyle = "#fff";
+        ctx.globalAlpha = 0.2 + Math.abs(Math.sin(tick + s.p)) * 0.4;
+        ctx.fillRect(s.x, s.y, s.s, s.s);
+    });
+
+    if(Math.random() < 0.03) createShootingStar();
+    shootingStars = shootingStars.filter(s => {
+        s.x += Math.cos(s.angle) * s.speed;
+        s.y += Math.sin(s.angle) * s.speed;
+        s.alpha -= 0.015;
+        if(s.alpha <= 0) return false;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${s.alpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(s.x, s.y);
+        ctx.lineTo(s.x - Math.cos(s.angle)*s.len, s.y - Math.sin(s.angle)*s.len);
+        ctx.stroke();
+        return true;
+    });
+
+    const scale = Math.min(canvas.width / 50, canvas.height / 50, 15) * (1 + Math.sin(tick * 2) * 0.05);
+    const cx = canvas.width / 2, cy = canvas.height / 2;
+
+    particles.forEach(p => {
+        let tx, ty;
+        const wx = Math.sin(tick + p.waveOffset) * 6;
+        const wy = Math.cos(tick + p.waveOffset) * 6;
+
+        if (globalMode === "text") {
+            const tp = textPoints[p.tIdx];
+            tx = tp.x + wx; ty = tp.y + wy;
+        } else {
+            p.angle += p.speed;
+            const xH = scale * 16 * Math.pow(Math.sin(p.angle), 3);
+            const yH = -scale * (13 * Math.cos(p.angle) - 5 * Math.cos(2*p.angle) - 2 * Math.cos(3*p.angle) - Math.cos(4*p.angle));
+            tx = xH + cx + wx; ty = yH + cy + wy;
+        }
+
+        if (mouse.active) {
+            const dx = mouse.x - p.x;
+            const dy = mouse.y - p.y;
+            const dSq = dx * dx + dy * dy;
+            if (dSq < 65000) {
+                const dist = Math.sqrt(dSq);
+                const force = (250 - dist) / 250;
+                p.vx += (Math.cos(Math.atan2(dy, dx) + 1.6) * force * 12);
+                p.vy += (Math.sin(Math.atan2(dy, dx) + 1.6) * force * 12);
+                p.vx += (dx / dist) * force * 5;
+                p.vy += (dy / dist) * force * 5;
             }
-            return points;
         }
 
-        function getHeartPoint(t, scale) {
-            let x = scale * 16 * Math.pow(Math.sin(t), 3);
-            let y = -scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-            return { x, y };
-        }
+        const ease = 0.05 + (mouse.burst * 0.05);
+        p.vx = (p.vx + (tx - p.x) * ease) * (0.83 + mouse.burst * 0.05);
+        p.vy = (p.vy + (ty - p.y) * ease) * (0.83 + mouse.burst * 0.05);
+        p.x += p.vx; p.y += p.vy;
 
-        function init() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            textPoints = getTextPoints("TE AMO");
-            particles = [];
+        ctx.globalAlpha = 0.8;
+        ctx.drawImage(sprites[p.color], p.x - 10, p.y - 10);
+    });
+    requestAnimationFrame(draw);
+}
 
-            // Creamos partículas: algunas para el texto, otras para el corazón
-            const totalParticles = textPoints.length + 600;
+const updatePos = (e) => {
+    const pos = e.touches ? e.touches[0] : e;
+    mouse.x = pos.clientX; mouse.y = pos.clientY;
+};
+window.addEventListener("mousedown", (e) => { mouse.active = true; updatePos(e); });
+window.addEventListener("mousemove", (e) => { if(mouse.active) updatePos(e); });
+window.addEventListener("mouseup", () => { mouse.active = false; mouse.burst = 1; });
+window.addEventListener("touchstart", (e) => { mouse.active = true; updatePos(e); });
+window.addEventListener("touchmove", (e) => { if(mouse.active) updatePos(e); });
+window.addEventListener("touchend", () => { mouse.active = false; mouse.burst = 1; });
+window.addEventListener("resize", init);
 
-            for (let i = 0; i < totalParticles; i++) {
-                particles.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 1.5 + 0.5,
-                    color: colors[i % colors.length],
-                    angle: Math.random() * Math.PI * 2,
-                    speed: (Math.random() * 0.01) + 0.005,
-                    // Si el índice es menor a los puntos del texto, su destino es el texto
-                    targetType: i < textPoints.length ? 'text' : 'heart',
-                    targetIdx: i < textPoints.length ? i : null
-                });
-            }
-        }
-
-        function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            tick += 0.03;
-            const pulse = 1 + Math.sin(tick) * 0.1;
-            const baseScale = Math.min(canvas.width / 50, canvas.height / 50, 15);
-            const currentScale = baseScale * pulse;
-            
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-
-            particles.forEach((p) => {
-                let tx, ty;
-
-                if (p.targetType === 'text') {
-                    // Destino: Punto específico de la letra
-                    tx = textPoints[p.targetIdx].x;
-                    ty = textPoints[p.targetIdx].y;
-                } else {
-                    // Destino: Perímetro del corazón
-                    p.angle += p.speed;
-                    const hPoint = getHeartPoint(p.angle, currentScale);
-                    tx = hPoint.x + centerX;
-                    ty = hPoint.y + centerY;
-                }
-
-                // Interacción con Mouse/Touch
-                const dx = mouse.x - p.x;
-                const dy = mouse.y - p.y;
-                const distSq = dx * dx + dy * dy;
-
-                if (distSq < mouse.radiusSq) {
-                    const dist = Math.sqrt(distSq);
-                    const force = (100 - dist) / 100;
-                    p.x -= (dx / dist) * force * 10;
-                    p.y -= (dy / dist) * force * 10;
-                } else {
-                    // Suavizado de movimiento hacia el objetivo
-                    p.x += (tx - p.x) * 0.07;
-                    p.y += (ty - p.y) * 0.07;
-                }
-
-                ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        // Eventos
-        window.addEventListener('resize', init);
-        const updatePos = (e) => {
-            const pos = e.touches ? e.touches[0] : e;
-            mouse.x = pos.clientX;
-            mouse.y = pos.clientY;
-        };
-        window.addEventListener('mousemove', updatePos);
-        window.addEventListener('touchstart', updatePos);
-        window.addEventListener('touchmove', updatePos);
-        window.addEventListener('touchend', () => { mouse.x = -1000; mouse.y = -1000; });
-
-        init();
-        animate();
-    </script>
+init();
+draw();
+</script>
 </body>
 </html>
