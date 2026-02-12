@@ -25,9 +25,53 @@
             font-family: 'Montserrat', sans-serif;
             color: white;
             overflow: hidden;
-            /* Crucial para móviles: evita gestos del sistema */
             touch-action: none; 
         }
+
+        /* --- ESTILO UNIFICADO DEL BOTÓN AURAGEM --- */
+        .btn-back {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .btn-back:hover, .btn-back:active {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--bright-red);
+        }
+
+        .mini-logo-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(45deg, #ff0055, #bc13fe); /* Respaldo si no hay logo */
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-back .text {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        /* ------------------------------------------ */
 
         #stars-container {
             position: absolute;
@@ -44,7 +88,6 @@
             max-width: 340px;
         }
 
-        /* El círculo de carga */
         .unlock-portal {
             width: 130px;
             height: 130px;
@@ -97,7 +140,6 @@
             margin-top: 10px;
         }
 
-        /* Pantalla Final */
         #final-msg {
             display: none;
             opacity: 0;
@@ -128,51 +170,12 @@
             background: var(--gold);
             color: black;
         }
-        .btn-back {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 6px 15px 6px 8px; /* Menos espacio a la izquierda para el logo */
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .mini-logo-btn {
-            width: 30px;  /* Tamaño perfecto para el botón */
-            height: 30px;
-            border-radius: 50%; /* Asegura que se vea circular */
-            object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.3); /* Un fino borde blanco */
-        }
-
-        .btn-back .text {
-            color: white;
-            font-family: 'Quicksand', sans-serif;
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-        }
-
-        /* Efecto al pasar el mouse o tocar */
-        .btn-back:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.25);
-        }
     </style>
 </head>
 <body>
+
     <a href="index.html" class="btn-back">
-        <img src="logo.png" alt="AuraGem Logo" class="mini-logo-btn">
+        <img src="logo.png" alt="" class="mini-logo-btn" onerror="this.style.display='block'">
         <span class="text">AuraGem</span>
     </a>
 
@@ -191,8 +194,7 @@
     <div class="main-card" id="final-msg">
         <h1 class="reveal-title">Eres mi mejor casualidad</h1>
         <p style="line-height: 1.6; font-weight: 300;">
-            No se trata de encontrar a la persona adecuada, se trata de haberte encontrado a ti y no querer buscar en ningún otro lado <br>
-            
+            No se trata de encontrar a la persona adecuada, se trata de haberte encontrado a ti y no querer buscar en ningún otro lado.
         </p>
         <div style="font-size: 2.5rem; margin: 20px 0;">🌹</div>
         <h3 style="letter-spacing: 2px; font-weight: 600;">¿Quieres ser mi San Valentín?</h3>
@@ -208,7 +210,7 @@
         
         let pressTimer;
         let charge = 0;
-        const limit = 377; // Circunferencia del círculo
+        const limit = 377;
 
         function startPress(e) {
             e.preventDefault();
@@ -233,7 +235,6 @@
 
         function complete() {
             clearInterval(pressTimer);
-            // Vibración sutil en móviles si está disponible
             if(navigator.vibrate) navigator.vibrate(100);
 
             intro.style.opacity = '0';
@@ -260,13 +261,11 @@
             this.style.border = "none";
         });
 
-        // Eventos táctiles y mouse
         btnTouch.addEventListener('touchstart', startPress);
         btnTouch.addEventListener('touchend', stopPress);
         btnTouch.addEventListener('mousedown', startPress);
         btnTouch.addEventListener('mouseup', stopPress);
 
-        // Fondo de estrellas
         const container = document.getElementById('stars-container');
         for (let i = 0; i < 40; i++) {
             const star = document.createElement('div');
@@ -281,6 +280,5 @@
             container.appendChild(star);
         }
     </script>
-
 </body>
 </html>

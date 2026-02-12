@@ -14,6 +14,7 @@
             --deep-red: #800f2f;
             --gold-accent: #d4af37;
             --night-bg: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            --aura-purple: #bc13fe;
         }
 
         body { 
@@ -28,7 +29,51 @@
             touch-action: none; 
         }
 
-        /* Capa de fondo */
+        /* --- BOTÓN AURAGEM UNIFICADO --- */
+        .btn-back {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 10000; /* Por encima de todo, incluso del botón 'No' */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .btn-back:hover, .btn-back:active {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--primary-pink);
+        }
+
+        .mini-logo-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: linear-gradient(45deg, var(--primary-pink), var(--aura-purple)); 
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-back .text {
+            color: white;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        /* ------------------------------------------ */
+
         #stars-container {
             position: fixed;
             top: 0; left: 0;
@@ -49,7 +94,6 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
-        /* Tarjeta */
         .card { 
             background: rgba(20, 10, 25, 0.8);
             backdrop-filter: blur(8px);
@@ -61,7 +105,7 @@
             width: 85%;
             max-width: 320px;
             position: relative;
-            z-index: 5; /* Nivel medio */
+            z-index: 5;
         }
 
         h2 { 
@@ -95,7 +139,7 @@
             color: white; 
             box-shadow: 0 8px 15px rgba(255, 45, 85, 0.3);
             position: relative;
-            z-index: 10; /* Siempre por encima de la card */
+            z-index: 10;
             transition: transform 0.2s ease;
         }
 
@@ -104,7 +148,7 @@
             color: white; 
             font-size: 0.85rem;
             border: 1px solid rgba(255, 255, 255, 0.3);
-            z-index: 999; /* El nivel más alto posible */
+            z-index: 999;
             white-space: nowrap;
             transition: left 0.1s ease, top 0.1s ease;
         }
@@ -121,23 +165,12 @@
             10% { opacity: 0.7; }
             100% { transform: translateY(-100vh); opacity: 0; }
         }
-
-        .btn-back {
-            position: fixed; top: 15px; left: 15px; z-index: 1000;
-            display: flex; align-items: center; gap: 8px;
-            padding: 5px 12px 5px 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50px;
-            text-decoration: none;
-        }
-
-        .mini-logo-btn { width: 25px; height: 25px; border-radius: 50%; object-fit: cover; }
-        .btn-back .text { color: white; font-size: 0.65rem; font-weight: 700; }
     </style>
 </head>
 <body>
+
     <a href="index.html" class="btn-back">
-        <img src="logo.png" alt="Logo" class="mini-logo-btn">
+        <img src="logo.png" alt="" class="mini-logo-btn" onerror="this.style.display='block'">
         <span class="text">AuraGem</span>
     </a>
 
@@ -162,12 +195,13 @@
             star.className = 'star';
             const size = Math.random() * 2 + 1 + 'px';
             star.style.width = size; star.style.height = size;
-            star.style.top = Math.random() * 100 + '%'; star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%'; 
+            star.style.left = Math.random() * 100 + '%';
             star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
             starsContainer.appendChild(star);
         }
 
-        // Corazones
+        // Corazones flotantes
         setInterval(() => {
             const heart = document.createElement('div');
             heart.className = 'floating-heart';
@@ -185,7 +219,6 @@
         function moverBotonNo(e) {
             if(e) e.preventDefault();
             
-            // TRUCO MAESTRO: Sacamos el botón del contenedor para que no herede el z-index de la card
             if (noBtn.parentElement.className === 'btns') {
                 document.body.appendChild(noBtn);
             }
@@ -197,12 +230,10 @@
             let newX, newY;
             let collision = true;
 
-            // Intentar encontrar posición sin chocar con el botón SÍ
             while (collision) {
                 newX = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding) + 20;
                 newY = Math.random() * (window.innerHeight - noBtn.offsetHeight - padding) + 20;
 
-                // Verificar si el área nueva se traslapa con el botón SÍ
                 const noRectFuture = {
                     left: newX,
                     top: newY,
@@ -210,11 +241,13 @@
                     bottom: newY + noBtn.offsetHeight
                 };
 
+                // Evitar superposición con el botón SÍ y con el botón AuraGem (top: 25, left: 25)
                 if (!(noRectFuture.right < yesRect.left - 20 || 
                       noRectFuture.left > yesRect.right + 20 || 
                       noRectFuture.bottom < yesRect.top - 20 || 
-                      noRectFuture.top > yesRect.bottom + 20)) {
-                    // Hay colisión, seguimos buscando
+                      noRectFuture.top > yesRect.bottom + 20) || 
+                      (newX < 150 && newY < 80)) { // Margen de seguridad para el botón AuraGem
+                    // Colisión
                 } else {
                     collision = false;
                 }
@@ -239,7 +272,6 @@
                 <h2 style="font-size: 2.2rem;">¡Eres mi felicidad! 😍</h2>
                 <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHpueXNidXp6eXNidXp6eXNidXp6eXNidXp6eXNidXp6eXNidSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KztT2c4u8mYYUiMKdJ/giphy.gif" style="width:100%; border-radius:15px; margin-top:15px;">
             `;
-            // Quitamos el botón NO si aceptó
             if(noBtn) noBtn.remove();
         });
     </script>
