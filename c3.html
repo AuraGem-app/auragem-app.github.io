@@ -39,7 +39,6 @@
         .btn-back .text {
             color: white; font-size: 0.85rem; font-weight: 700;
             letter-spacing: 1.5px; text-transform: uppercase;
-            font-family: sans-serif;
         }
 
         .vignette {
@@ -67,7 +66,7 @@ let particles = [], stars = [], phrasesPoints = [];
 let tick = 0, modeTimer = 0, globalMode = "heart";
 let currentPhraseIndex = 0;
 
-const phrases = ["ERES MI TODO", "FELIZ 14", "JUNTOS X SIEMPRE", "MI CORAZÓN"];
+const phrases = ["ERES MI TODO", "FELIZ 14", "JUNTOS SIEMPRE", "MI CORAZÓN"];
 const colors = ["#ff0040", "#ff4d6d", "#ff85a1", "#ffd700"];
 const sprites = {};
 let mouse = { x: -1000, y: -1000, active: false, burst: 0 };
@@ -104,16 +103,41 @@ function getTextPoints(phrase) {
     tCanvas.width = window.innerWidth;
     tCanvas.height = window.innerHeight;
     
-    // Mejora de fuente: Más grande y peso visual corregido
-    const fontSize = Math.min(window.innerWidth / (phrase.length * 0.65), isMobile ? 65 : 120);
-    tCtx.font = `900 ${fontSize}px sans-serif`; 
+    // Tamaño base de fuente
+    let fontSize = Math.min(window.innerWidth / 7, isMobile ? 65 : 115);
+    tCtx.font = `900 ${fontSize}px sans-serif`;
+    
+    // Medir ancho real del texto
+    const metrics = tCtx.measureText(phrase);
+    const maxWidth = window.innerWidth * 0.85; // Deja un 15% de margen
+
+    // Decidir si se divide la frase (si es móvil y el texto es ancho o largo)
+    const shouldSplit = isMobile && (metrics.width > maxWidth || phrase.length > 9);
+    const words = phrase.split(' ');
+    
     tCtx.textAlign = "center";
     tCtx.textBaseline = "middle";
-    tCtx.fillText(phrase, tCanvas.width / 2, tCanvas.height / 2);
+    tCtx.fillStyle = "white";
+
+    if (shouldSplit && words.length > 1) {
+        const mid = Math.ceil(words.length / 2);
+        const line1 = words.slice(0, mid).join(' ');
+        const line2 = words.slice(mid).join(' ');
+        
+        // Dibujamos en dos niveles
+        tCtx.fillText(line1, tCanvas.width / 2, tCanvas.height / 2 - fontSize * 0.6);
+        tCtx.fillText(line2, tCanvas.width / 2, tCanvas.height / 2 + fontSize * 0.6);
+    } else {
+        // Si es una sola línea pero sigue siendo muy ancha, reducimos la fuente
+        if (metrics.width > maxWidth) {
+            const adjustedSize = (maxWidth / metrics.width) * fontSize;
+            tCtx.font = `900 ${adjustedSize}px sans-serif`;
+        }
+        tCtx.fillText(phrase, tCanvas.width / 2, tCanvas.height / 2);
+    }
 
     const data = tCtx.getImageData(0, 0, tCanvas.width, tCanvas.height).data;
     const points = [];
-    // Step aumentado para evitar saturación de partículas en las letras
     const step = isMobile ? 6 : 5; 
     for (let y = 0; y < tCanvas.height; y += step) {
         for (let x = 0; x < tCanvas.width; x += step) {
@@ -135,7 +159,7 @@ function init() {
     createSprites();
     precalculatePhrases();
 
-    stars = Array.from({length: 50}, () => ({
+    stars = Array.from({length: 60}, () => ({
         x: Math.random() * window.innerWidth,
         y: Math.random() * window.innerHeight,
         s: Math.random() * 2,
@@ -151,14 +175,13 @@ function init() {
             color: colors[i % colors.length],
             angle: Math.random() * Math.PI * 2,
             speed: 0.02 + Math.random() * 0.03,
-            offset: Math.random() * 100,
-            noiseOff: Math.random() * 10
+            offset: Math.random() * 100
         });
     }
 }
 
 function draw() {
-    ctx.fillStyle = "rgba(10, 0, 5, 1)";
+    ctx.fillStyle = "#0a0005";
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     
     tick += 0.02; 
@@ -192,9 +215,8 @@ function draw() {
 
         if (globalMode === "text" && currentPoints.length > 0) {
             const target = currentPoints[i % currentPoints.length];
-            // Vibración reducida (de 4 a 1.2) para máxima legibilidad
-            const waveX = Math.sin(tick * 1.5 + p.offset) * 1.2;
-            const waveY = Math.cos(tick * 1.2 + p.offset) * 1.2;
+            const waveX = Math.sin(tick * 1.5 + p.offset) * 1.1;
+            const waveY = Math.cos(tick * 1.2 + p.offset) * 1.1;
             tx = target.x + waveX;
             ty = target.y + waveY;
         } else {
@@ -208,8 +230,8 @@ function draw() {
         const dx = tx - p.x;
         const dy = ty - p.y;
         
-        const friction = 0.75;
-        const ease = globalMode === "text" ? 0.09 : 0.05; // Más firme en modo texto
+        const friction = 0.76;
+        const ease = globalMode === "text" ? 0.09 : 0.05;
         
         p.vx = (p.vx + dx * (ease + mouse.burst * 0.05)) * friction;
         p.vy = (p.vy + dy * (ease + mouse.burst * 0.05)) * friction;
@@ -217,17 +239,17 @@ function draw() {
         const mdx = mouse.x - p.x;
         const mdy = mouse.y - p.y;
         const dist = Math.sqrt(mdx*mdx + mdy*mdy);
-        if(dist < 80) {
-            const force = (80 - dist) / 80;
-            p.vx -= mdx * force * 0.4;
-            p.vy -= mdy * force * 0.4;
+        if(dist < 75) {
+            const force = (75 - dist) / 75;
+            p.vx -= mdx * force * 0.5;
+            p.vy -= mdy * force * 0.5;
         }
 
         p.x += p.vx;
         p.y += p.vy;
 
         const pSize = isMobile ? 8 : 11;
-        ctx.globalAlpha = 0.9; // Un poco más opaco para definir bordes
+        ctx.globalAlpha = 0.85;
         ctx.drawImage(sprites[p.color], p.x - pSize/2, p.y - pSize/2, pSize, pSize);
     });
 
@@ -243,7 +265,10 @@ window.addEventListener("mousedown", (e) => { mouse.active = true; updatePos(e);
 window.addEventListener("mousemove", (e) => { updatePos(e); });
 window.addEventListener("mouseup", () => { mouse.active = false; mouse.x = -1000; });
 window.addEventListener("touchstart", (e) => { mouse.active = true; updatePos(e); });
-window.addEventListener("touchmove", (e) => { updatePos(e); });
+window.addEventListener("touchmove", (e) => { 
+    if(e.cancelable) e.preventDefault(); 
+    updatePos(e); 
+}, { passive: false });
 window.addEventListener("touchend", () => { mouse.active = false; mouse.x = -1000; });
 window.addEventListener("resize", () => { init(); });
 
