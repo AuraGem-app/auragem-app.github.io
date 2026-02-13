@@ -74,7 +74,7 @@ let mouse = { x: -1000, y: -1000, active: false, burst: 0 };
 
 const dpr = window.devicePixelRatio || 1;
 const isMobile = window.innerWidth < 768;
-const particleCount = isMobile ? 1200 : 2200; // Optimizado para fluidez
+const particleCount = isMobile ? 1200 : 2200;
 
 function createSprites() {
     colors.forEach(color => {
@@ -104,7 +104,8 @@ function getTextPoints(phrase) {
     tCanvas.width = window.innerWidth;
     tCanvas.height = window.innerHeight;
     
-    const fontSize = Math.min(window.innerWidth / (phrase.length * 0.7), isMobile ? 50 : 100);
+    // Mejora de fuente: Más grande y peso visual corregido
+    const fontSize = Math.min(window.innerWidth / (phrase.length * 0.65), isMobile ? 65 : 120);
     tCtx.font = `900 ${fontSize}px sans-serif`; 
     tCtx.textAlign = "center";
     tCtx.textBaseline = "middle";
@@ -112,7 +113,8 @@ function getTextPoints(phrase) {
 
     const data = tCtx.getImageData(0, 0, tCanvas.width, tCanvas.height).data;
     const points = [];
-    const step = isMobile ? 5 : 4; 
+    // Step aumentado para evitar saturación de partículas en las letras
+    const step = isMobile ? 6 : 5; 
     for (let y = 0; y < tCanvas.height; y += step) {
         for (let x = 0; x < tCanvas.width; x += step) {
             if (data[(y * tCanvas.width + x) * 4 + 3] > 128) {
@@ -156,7 +158,6 @@ function init() {
 }
 
 function draw() {
-    // Fondo con estela leve para suavizar el movimiento
     ctx.fillStyle = "rgba(10, 0, 5, 1)";
     ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
     
@@ -191,16 +192,15 @@ function draw() {
 
         if (globalMode === "text" && currentPoints.length > 0) {
             const target = currentPoints[i % currentPoints.length];
-            // MOVIMIENTO VIBRANTE: Oscilación doble para efecto "enjambre"
-            const waveX = Math.sin(tick * 2 + p.offset) * 4;
-            const waveY = Math.cos(tick * 1.5 + p.offset) * 4;
+            // Vibración reducida (de 4 a 1.2) para máxima legibilidad
+            const waveX = Math.sin(tick * 1.5 + p.offset) * 1.2;
+            const waveY = Math.cos(tick * 1.2 + p.offset) * 1.2;
             tx = target.x + waveX;
             ty = target.y + waveY;
         } else {
             p.angle += p.speed;
             const xH = 16 * Math.pow(Math.sin(p.angle), 3);
             const yH = -(13 * Math.cos(p.angle) - 5 * Math.cos(2*p.angle) - 2 * Math.cos(3*p.angle) - Math.cos(4*p.angle));
-            // El corazón también flota un poco
             tx = cx + xH * scale + Math.sin(tick + p.offset) * 5;
             ty = cy + yH * scale + Math.cos(tick + p.offset) * 5;
         }
@@ -208,14 +208,12 @@ function draw() {
         const dx = tx - p.x;
         const dy = ty - p.y;
         
-        // Elasticidad aumentada para el movimiento
         const friction = 0.75;
-        const ease = globalMode === "text" ? 0.08 : 0.05;
+        const ease = globalMode === "text" ? 0.09 : 0.05; // Más firme en modo texto
         
         p.vx = (p.vx + dx * (ease + mouse.burst * 0.05)) * friction;
         p.vy = (p.vy + dy * (ease + mouse.burst * 0.05)) * friction;
 
-        // Interacción con mouse/touch
         const mdx = mouse.x - p.x;
         const mdy = mouse.y - p.y;
         const dist = Math.sqrt(mdx*mdx + mdy*mdy);
@@ -228,8 +226,8 @@ function draw() {
         p.x += p.vx;
         p.y += p.vy;
 
-        const pSize = isMobile ? 8 : 12;
-        ctx.globalAlpha = 0.85;
+        const pSize = isMobile ? 8 : 11;
+        ctx.globalAlpha = 0.9; // Un poco más opaco para definir bordes
         ctx.drawImage(sprites[p.color], p.x - pSize/2, p.y - pSize/2, pSize, pSize);
     });
 
