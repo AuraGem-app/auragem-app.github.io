@@ -1,0 +1,308 @@
+:root { 
+    --pink: #ff4d6d; 
+    --neon-pink: #ff0055;
+    --easy: #00ff88; 
+    --med: #ffaa00; 
+    --hard: #ff0044; 
+    --potion: #00f2ff; 
+    --shield: #fbff00; 
+    --glow: 0 0 15px var(--neon-pink);
+    --bg-dark: #050005;
+}
+
+* { 
+    box-sizing: border-box; 
+    touch-action: none; 
+    user-select: none; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    background: var(--bg-dark); 
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    overflow: hidden; 
+    height: 100vh; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+}
+
+/* --- BOTÓN AURAGEM --- */
+.btn-back {
+    position: fixed;
+    top: 25px;
+    left: 25px;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.btn-back:hover, .btn-back:active {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: var(--primary-pink);
+}
+
+.mini-logo-btn {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: linear-gradient(45deg, var(--primary-pink), var(--aura-purple)); 
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.btn-back .text {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.btn-back.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.4s ease;
+}
+/* --- CONTENEDOR PRINCIPAL --- */
+#game-container {
+    position: relative; 
+    width: 100vw; 
+    max-width: 500px; 
+    height: 100vh;
+    background: radial-gradient(circle at center, #1a000a 0%, #000 100%);
+    border-left: 2px solid rgba(255, 0, 85, 0.3);
+    border-right: 2px solid rgba(255, 0, 85, 0.3);
+    overflow: hidden;
+    box-shadow: inset 0 0 100px rgba(255, 0, 85, 0.1);
+}
+
+/* --- UI DE JUEGO --- */
+#ui {
+    position: absolute; 
+    top: 80px; 
+    width: 100%;
+    display: flex; 
+    justify-content: space-around;
+    z-index: 100; 
+    font-size: 1.1rem; 
+    font-weight: 900;
+    text-shadow: 0 0 10px var(--neon-pink);
+    letter-spacing: 1px;
+}
+
+#player {
+    position: absolute; 
+    bottom: 80px; 
+    left: 50%;
+    font-size: 60px; 
+    transform: translateX(-50%);
+    z-index: 50; 
+    filter: none; 
+    transition: none; 
+}
+
+.entity { 
+    position: absolute; 
+    font-size: 42px; 
+    will-change: top; 
+    pointer-events: none; 
+    text-align: center;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.2));
+}
+
+/* --- MODALES Y MENÚS --- */
+.modal {
+    position: absolute; 
+    inset: 0; 
+    background: rgba(0,0,0,0.92);
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center; 
+    z-index: 200; 
+    padding: 20px; 
+    text-align: center;
+}
+
+.menu-title { 
+    color: white; 
+    font-size: 2.5rem; 
+    margin-bottom: 5px; 
+    text-shadow: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink);
+    text-transform: uppercase;
+}
+
+.menu-subtitle {
+    color: var(--pink);
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* --- CENTRADO DE TARJETAS --- */
+.difficulty-cards-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centrado horizontal */
+    gap: 12px;
+}
+
+.difficulty-card {
+    width: 90%; 
+    max-width: 340px; 
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1); 
+    border-radius: 18px;
+    padding: 15px; 
+    cursor: pointer;
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.difficulty-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-2px);
+}
+
+/* Colores específicos de dificultad */
+.card-tuto:hover { border-color: var(--potion); box-shadow: 0 0 15px var(--potion); }
+.card-easy:hover { border-color: var(--easy); box-shadow: 0 0 15px var(--easy); }
+.card-med:hover { border-color: var(--med); box-shadow: 0 0 15px var(--med); }
+.card-hard:hover { border-color: var(--hard); box-shadow: 0 0 15px var(--hard); }
+
+.card-icon { font-size: 24px; }
+.card-info { text-align: left; }
+.card-info h3 { font-size: 1rem; margin-bottom: 2px; }
+.card-info p { font-size: 0.8rem; color: #aaa; }
+
+/* --- TUTORIAL MEJORADO --- */
+#tutorial-overlay {
+    position: absolute; 
+    top: 45%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    width: 85%; 
+    max-width: 320px; 
+    background: linear-gradient(135deg, rgba(15, 0, 20, 0.98), rgba(30, 0, 40, 0.95));
+    padding: 35px 25px; 
+    border-radius: 30px; 
+    z-index: 300; 
+    display: none; 
+    flex-direction: column; 
+    align-items: center;
+    /* Borde neón persistente */
+    border: 2px solid var(--potion);
+    box-shadow: 0 0 40px rgba(0, 242, 255, 0.2), 
+                inset 0 0 15px rgba(0, 242, 255, 0.1);
+    animation: scaleIn 0.3s ease-out;
+}
+
+#tuto-text { 
+    font-size: 1.15rem; 
+    margin-bottom: 25px; 
+    line-height: 1.6; 
+    color: #fff; 
+    text-align: center;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+#tutorial-overlay small {
+    color: var(--potion);
+    font-weight: 800;
+    letter-spacing: 3px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    background: rgba(0, 242, 255, 0.1);
+    padding: 5px 15px;
+    border-radius: 50px;
+}
+
+/* Indicador de movimiento (Hint) */
+#tuto-move-hint {
+    position: absolute; 
+    bottom: 200px; 
+    width: 100%; 
+    text-align: center;
+    color: var(--potion); 
+    font-weight: 900; 
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-size: 0.9rem;
+    pointer-events: none;
+    text-shadow: 0 0 15px var(--potion);
+    animation: slideHint 2s infinite ease-in-out;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes scaleIn {
+    from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes slideHint {
+    0%, 100% { transform: translateX(-10px); opacity: 0.5; }
+    50% { transform: translateX(10px); opacity: 1; }
+}
+/* --- ANIMACIONES Y EFECTOS --- */
+@keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.95); } }
+
+.btn-reload {
+    background: transparent; 
+    color: white; 
+    border: 2px solid var(--neon-pink);
+    padding: 12px 40px; 
+    font-size: 0.9rem; 
+    border-radius: 50px;
+    font-weight: 800; 
+    margin-top: 25px; 
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+    text-shadow: 0 0 5px var(--neon-pink);
+    transition: 0.3s;
+}
+
+.btn-reload:hover {
+    background: var(--neon-pink);
+    box-shadow: 0 0 25px var(--neon-pink);
+}
+.admin-toggle-zone {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.btn-admin-setup {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    color: #0f0; /* Color verde Matrix */
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-admin-setup:hover {
+    background: rgba(0, 255, 0, 0.1);
+    border-color: #0f0;
+}

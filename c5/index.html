@@ -1,0 +1,88 @@
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <title>Love Survivor ❤️ | AuraGem</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+        <a href="../index.html" class="btn-back" aria-label="Volver al inicio">
+            <img src="../logo.png" alt="Logo AuraGem" class="mini-logo-btn">
+            <span class="text">AuraGem</span>
+        </a>
+
+        <div id="game-container">
+            <div id="ui">
+                <div class="stat">PROGRESO: <span id="score">0</span>%</div>
+                <div id="lives" aria-label="Vidas restantes">❤️❤️❤️</div>
+            </div>
+
+            <div id="player" role="img" aria-label="Cohete espacial">🚀</div>
+            
+            <div id="tuto-move-hint" style="display:none">↔️ Desliza para moverte ↔️</div>
+
+            <div id="tutorial-overlay" style="display:none">
+                <div class="tuto-content">
+                    <p id="tuto-text"></p>
+                    <small>TOCA PARA CONTINUAR</small>
+                </div>
+            </div>
+
+            <div id="menu-modal" class="modal">
+                <h1 class="menu-title">Love Survivor</h1>
+                <p class="menu-subtitle">Esquiva los problemas, atrapa el amor.</p>
+                
+                <div class="difficulty-cards-container">
+                    <button class="difficulty-card card-tuto" onclick="startTutorial()">
+                        <span class="card-icon">📖</span>
+                        <div class="card-info">
+                            <h3 style="color: var(--potion)">Academia de Vuelo</h3>
+                            <p>Tutorial: Aprende a pilotar tu cohete.</p>
+                        </div>
+                    </button>
+
+                    <button class="difficulty-card card-easy" onclick="setupGame('easy')">
+                        <span class="card-icon">🍃</span>
+                        <div class="card-info">
+                            <h3 style="color: var(--easy)">Modo Chill</h3>
+                            <p>Velocidad relajada.</p>
+                        </div>
+                    </button>
+                    
+                    <button class="difficulty-card card-med" onclick="setupGame('med')">
+                        <span class="card-icon">⚡</span>
+                        <div class="card-info">
+                            <h3 style="color: var(--med)">Superviviente</h3>
+                            <p>Dificultad progresiva.</p>
+                        </div>
+                    </button>
+                    
+                    <button class="difficulty-card card-hard" onclick="setupGame('hard')">
+                        <span class="card-icon">💀</span>
+                        <div class="card-info">
+                            <h3 style="color: var(--hard)">Pesadilla</h3>
+                            <p>Rocas inteligentes.</p>
+                        </div>
+                    </button>
+                </div>
+                <button class="difficulty-card card-admin" onclick="checkAdminPassword()">
+                    <span class="card-icon">🔐</span>
+                    <div class="card-info">
+                        <h3 style="color: #0f0">Acceso Restringido</h3>
+                        <p>Solo personal autorizado.</p>
+                    </div>
+                </button>            
+            </div>
+
+            <div id="end-modal" class="modal" style="display:none">
+                <h1 id="end-title"></h1>
+                <p id="end-msg"></p>
+                <button class="btn-reload" onclick="location.reload()">VOLVER AL INICIO</button>
+            </div>
+        </div>
+
+        <script src="script.js"></script>
+    </body>
+    </html>

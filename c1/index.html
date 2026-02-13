@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Un Regalo para Ti ❤️</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <a href="../index.html" class="btn-back">
+        <img src="../logo.png" alt="" class="mini-logo-btn">
+        <span class="text">AuraGem</span>
+    </a>
+
+    <div id="stars-container"></div>
+
+    <div class="main-card" id="intro">
+        <div class="unlock-portal" id="btn-touch">
+            <svg class="portal-ring" width="130" height="130">
+                <circle id="loader" r="60" cx="65" cy="65"></circle>
+            </svg>
+            <div class="heart-trigger beating">❤️</div>
+        </div>
+        <p class="hint">Mantén presionado para revelar</p>
+    </div>
+
+    <div class="main-card" id="final-msg">
+        <h1 class="reveal-title">Eres mi mejor casualidad</h1>
+        <p style="line-height: 1.6; font-weight: 300;">
+            No se trata de encontrar a la persona adecuada, se trata de haberte encontrado a ti y no querer buscar en ningún otro lado.
+        </p>
+        <div style="font-size: 2.5rem; margin: 20px 0;">🌹</div>
+        <h3 style="letter-spacing: 2px; font-weight: 600;">¿Quieres ser mi San Valentín?</h3>
+        
+        <button class="btn-confirm" id="btn-final">SÍ, ACEPTO</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="musica.js"></script>
+
+</body>
+</html>
