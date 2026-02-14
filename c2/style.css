@@ -103,29 +103,28 @@ body {
 
 .regalo {
     position: absolute;
-    /* Posicionamiento inicial en el centro exacto */
     top: 50%;
     left: 50%;
-    /* El transform inicial es CRUCIAL para el centrado */
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* Centrado inicial */
     
     width: 280px; 
     height: 280px;
     cursor: pointer;
     z-index: 50;
     
-    /* Aplicamos la animación */
+    /* Asegúrate de que el nombre coincida con el @keyframes */
     animation: flotarRegalo 3s ease-in-out infinite;
-    transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
+    transition: var(--transition-standard);
 }
 
-@keyframes flotar {
+@keyframes flotarRegalo {
     0%, 100% { 
+        /* Mantenemos el -50% horizontal siempre */
         transform: translate(-50%, -50%) rotate(0deg); 
     }
     50% { 
-        /* Solo variamos ligeramente el eje Y sin romper el centro */
-        transform: translate(-50%, -55%) rotate(1deg); 
+        /* Solo movemos un poquito el eje Y (-53%) */
+        transform: translate(-50%, -53%) rotate(1deg); 
     }
 }
 .caja-base {
@@ -367,12 +366,18 @@ body.abierto .contenedor-cartas {
         height: 380px; 
     }
     .regalo { 
-        width: 200px; 
-        height: 200px; 
-    }
+            width: 220px; 
+            height: 220px;
+            /* Si sientes que queda muy abajo, puedes ajustar el top al 45% */
+            top: 45%; 
+        }
     .tapa { 
-        width: 230px; 
-    }
+            width: 250px; 
+            left: -15px; /* Ajuste para que la tapa no se desplace */
+        }
+    .caja-base {
+            height: 180px;
+        }
     .hoja-libro h1 { 
         font-size: 1.8rem; 
     }
