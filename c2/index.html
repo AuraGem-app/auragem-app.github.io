@@ -2,47 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Un Regalo para Ti</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Un Regalo para Ti | AuraGem</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <a href="../index.html" class="btn-back">
-        <img src="../logo.png" alt="" class="mini-logo-btn">
-        <span class="text">AuraGem</span>
-    </a>
+    <nav>
+        <a href="../index.html" class="btn-back" aria-label="Volver al inicio">
+            <img src="../logo.png" alt="Logo AuraGem" class="mini-logo-btn" loading="lazy">
+            <span class="text">AuraGem</span>
+        </a>
+    </nav>
 
-    <div class="escena">
-        <div class="regalo" id="regalo-box" onclick="abrirRegalo()">
-            <div class="tapa">
+    <main class="escena">
+        <section class="regalo" id="regalo-box" role="button" tabindex="0" onclick="abrirRegalo()" aria-label="Abrir regalo">
+            <div class="tapa" aria-hidden="true">
                 <div class="lazo-v"></div>
             </div>
-            <div class="caja-base">
+            <div class="caja-base" aria-hidden="true">
                 <div class="lazo-v"></div>
                 <div class="lazo-h"></div>
             </div>
-        </div>
+        </section>
 
-        <div class="contenedor-cartas" id="contenedor-cartas">
+        <section class="contenedor-cartas" id="contenedor-cartas" aria-live="polite">
             <div class="stack-cartas" id="stack"></div>
-            <div class="tap-hint" id="hint">Toca la carta para ver más ❤️</div>
-        </div>
+            <p class="tap-hint" id="hint">Toca la carta para ver más ❤️</p>
+        </section>
 
-        <div id="final-gif-container" class="gif-final">
-            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHppbHFkdDJ5emQwNDI2NHg3mXF6NGgycXR6cXpiMzV1aWJkcXh6dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rT7WPCciy8oETxLmUV/giphy.gif" alt="Regalo Final">
+        <section id="final-gif-container" class="gif-final">
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHppbHFkdDJ5emQwNDI2NHg3mXF6NGgycXR6cXpiMzV1aWJkcXh6dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rT7WPCciy8oETxLmUV/giphy.gif" 
+                 alt="Dibujo animado celebrando" 
+                 width="200" height="200">
             
-            <button class="btn-reset" onclick="reiniciarExperiencia()">
+            <button type="button" class="btn-reset" onclick="reiniciarExperiencia()">
                 Ver de nuevo ✨
             </button>
-        </div>
-    </div>
+        </section>
+    </main>
 
-    <audio id="musica-regalo" loop>
+    <audio id="musica-regalo" loop preload="none">
         <source src="musica.mp3" type="audio/mpeg">
+        Tu navegador no soporta audio.
     </audio>
 
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
 </body>
 </html>

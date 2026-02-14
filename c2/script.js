@@ -1,5 +1,6 @@
+/* --- CONFIGURACIÓN Y ESTADO --- */
 let paginaActual = 0;
-const mensajes = [
+const MENSAJES = [
     { titulo: "¡Para ti! ❤️", cuerpo: "Cada página de este librito es un pequeño detalle para recordarte lo especial que eres." },
     { titulo: "Eres increíble ✨", cuerpo: "Gracias por estar en mi vida y por todos los momentos que compartimos." },
     { titulo: "Tu sonrisa 😊", cuerpo: "Es capaz de iluminar hasta mi día más gris. Nunca dejes de sonreír." },
@@ -7,17 +8,32 @@ const mensajes = [
     { titulo: "Te quiero mucho", cuerpo: "Gracias por ser exactamente como eres. 🎁" }
 ];
 
+// Selectores frecuentes
+const elements = {
+    stack: () => document.getElementById('stack'),
+    hint: () => document.getElementById('hint'),
+    gif: () => document.getElementById('final-gif-container'),
+    musica: () => document.getElementById('musica-regalo')
+};
+
+/* --- FUNCIONES PRINCIPALES --- */
+
+/**
+ * Crea las cartas en el DOM basándose en el array de mensajes.
+ */
 function inicializarCartas() {
-    const stack = document.getElementById('stack');
+    const stack = elements.stack();
     stack.innerHTML = '';
     
-    mensajes.forEach((msg, index) => {
+    MENSAJES.forEach((msg, index) => {
         const carta = document.createElement('div');
         carta.className = 'hoja-libro';
-        carta.style.zIndex = mensajes.length - index;
         
-        // Efecto visual de pila
-        carta.style.transform = `translateY(${index * 5}px) scale(${1 - index * 0.02})`;
+        // Estilo dinámico: z-index invertido y efecto de profundidad
+        Object.assign(carta.style, {
+            zIndex: MENSAJES.length - index,
+            transform: `translateY(${index * 5}px) scale(${1 - index * 0.02})`
+        });
 
         carta.innerHTML = `
             <h1>${msg.titulo}</h1>
@@ -32,82 +48,107 @@ function inicializarCartas() {
     });
 }
 
+/**
+ * Activa la apertura de la caja y la música.
+ */
 function abrirRegalo() {
     if (document.body.classList.contains('abierto')) return;
+    
     document.body.classList.add('abierto');
+    gestionarMusica(true);
 
-    // Música
-    const musica = document.getElementById('musica-regalo');
-    musica.volume = 0;
-    musica.play().then(() => {
-        let fadeAudio = setInterval(() => {
-            if (musica.volume < 0.5) musica.volume += 0.05;
-            else clearInterval(fadeAudio);
-        }, 200);
-    }).catch(() => console.log("Interacción requerida para audio"));
-
-    // Partículas iniciales
-    for (let i = 0; i < 50; i++) crearParticula();
+    // Partículas de explosión inicial
+    emitirParticulas(50);
 }
 
+/**
+ * Controla la transición de las cartas (pasa de una a otra).
+ */
 function siguientePagina() {
     const cartas = document.querySelectorAll('.hoja-libro');
+    
     if (paginaActual < cartas.length) {
         cartas[paginaActual].classList.add('carta-fuera');
-        for (let i = 0; i < 10; i++) crearParticula();
-        
+        emitirParticulas(10);
         paginaActual++;
 
         if (paginaActual === cartas.length) {
-            const hint = document.getElementById('hint');
-            hint.innerHTML = "Con amor, para ti ❤️";
-            hint.classList.add('final');
-            
-            mostrarGifFinal();
+            finalizarExperiencia();
         }
     }
 }
 
-function mostrarGifFinal() {
-    const gifContainer = document.getElementById('final-gif-container');
+/**
+ * Acciones finales al terminar de leer todas las cartas.
+ */
+function finalizarExperiencia() {
+    elements.stack().classList.add('oculto'); 
+    
+    const hint = elements.hint();
+    const gifContainer = elements.gif();
+    const btnReset = document.querySelector('.btn-reset');
+
+    // Preparamos el texto
+    hint.innerHTML = "Con amor, para ti ❤️";
+    hint.classList.add('final');
+
     setTimeout(() => {
+        // Mostramos el contenedor principal
         gifContainer.classList.add('mostrar');
-        // Explosión de corazones final
-        for (let i = 0; i < 40; i++) {
-            setTimeout(crearParticula, i * 40);
-        }
+
+        // Reordenamos los elementos dentro del contenedor
+        // Al hacer esto, se disparan las animaciones de CSS con sus delays
+        gifContainer.appendChild(document.querySelector('.gif-final img')); 
+        gifContainer.appendChild(hint); 
+        gifContainer.appendChild(btnReset); 
+
+        emitirParticulas(40, 40);
     }, 600);
 }
 
-// Función para volver al inicio manualmente
+/**
+ * Reinicia todo el flujo al estado original.
+ */
 function reiniciarExperiencia() {
-    // 1. Desvanecer elementos finales
-    const gifContainer = document.getElementById('final-gif-container');
-    const hint = document.getElementById('hint');
-    
-    gifContainer.classList.remove('mostrar');
-    
-    // 2. Cerrar el regalo (volver el body a estado normal)
+    elements.gif().classList.remove('mostrar');
     document.body.classList.remove('abierto');
+    elements.stack().classList.remove('oculto'); 
 
-    // 3. Resetear variables y cartas
     paginaActual = 0;
+    gestionarMusica(false);
     
     setTimeout(() => {
-        // Quitamos la clase final al texto después de que la transición del body ayude a ocultarlo
+        const hint = elements.hint();
         hint.classList.remove('final');
         hint.innerHTML = "Toca la carta para ver más ❤️";
-        
-        // Limpiamos el stack y lo reinicializamos
         inicializarCartas();
-        
-        // Reset música
-        const musica = document.getElementById('musica-regalo');
-        musica.pause();
-        musica.currentTime = 0;
-    }, 800); // Esperamos a que la animación de cierre de la caja progrese
+    }, 800);
 }
 
+/* --- UTILIDADES --- */
+
+/**
+ * Gestiona el audio con un pequeño efecto de fade-in o reset.
+ */
+function gestionarMusica(play) {
+    const musica = elements.musica();
+    if (play) {
+        musica.volume = 0;
+        musica.play().then(() => {
+            let fade = setInterval(() => {
+                if (musica.volume < 0.5) musica.volume += 0.05;
+                else clearInterval(fade);
+            }, 200);
+        }).catch(() => console.warn("Audio bloqueado por el navegador"));
+    } else {
+        musica.pause();
+        musica.currentTime = 0;
+    }
+}
+
+/**
+ * Genera efectos visuales de corazones.
+ */
 function crearParticula() {
     const p = document.createElement('div');
     p.className = 'particula';
@@ -119,10 +160,16 @@ function crearParticula() {
     p.style.setProperty('--x', `${x}px`);
     p.style.setProperty('--y', `${y}px`);
     p.style.setProperty('--r', `${Math.random() * 360}deg`);
-    p.style.left = '50%'; p.style.top = '50%';
     
     document.body.appendChild(p);
     setTimeout(() => p.remove(), 2500);
 }
 
+function emitirParticulas(cantidad, delay = 0) {
+    for (let i = 0; i < cantidad; i++) {
+        delay > 0 ? setTimeout(crearParticula, i * delay) : crearParticula();
+    }
+}
+
+// Inicialización
 window.onload = inicializarCartas;

@@ -1,4 +1,6 @@
-/* --- CONFIGURACIÓN Y VARIABLES --- */
+/* =========================================
+   1. CONFIGURACIÓN, VARIABLES Y RESET
+   ========================================= */
 :root {
     --color-caja: #ff4d6d;
     --color-tapa: #ff758f;
@@ -6,6 +8,8 @@
     --aura-pink: #ff0055;
     --aura-purple: #bc13fe;
     --fondo-oscuro: #120c17;
+    --shadow-heavy: 0 20px 50px rgba(0,0,0,0.6);
+    --transition-standard: all 1s cubic-bezier(0.6, 0, 0.4, 1);
 }
 
 * {
@@ -16,16 +20,20 @@
 body {
     margin: 0;
     height: 100vh;
+    width: 100vw;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Centro horizontal absoluto */
+    align-items: center;     /* Centro vertical absoluto */
     background: radial-gradient(circle at center, #2d1b33 0%, var(--fondo-oscuro) 100%);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
     touch-action: none;
+    position: relative; 
 }
 
-/* --- BOTÓN BACK --- */
+/* =========================================
+   2. COMPONENTES DE NAVEGACIÓN (BOTONES)
+   ========================================= */
 .btn-back {
     position: fixed;
     top: 25px;
@@ -44,25 +52,82 @@ body {
     transition: 0.4s ease;
 }
 
-.mini-logo-btn { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-.btn-back .text { color: white; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
+.mini-logo-btn { 
+    width: 24px; 
+    height: 24px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+}
 
-/* --- DISEÑO DEL REGALO (SÚPER GRANDE) --- */
-.regalo {
+.btn-back .text { 
+    color: white; 
+    font-size: 0.8rem; 
+    font-weight: 700; 
+    text-transform: uppercase; 
+    letter-spacing: 1.2px; 
+}
+
+.btn-reset {
     position: relative;
-    width: 280px; /* Tamaño aumentado */
-    height: 280px; /* Tamaño aumentado */
+    z-index: 1001 !important;
+    margin-top: 10px;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    color: white;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    pointer-events: auto !important;
+}
+
+.btn-reset:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+    border-color: white;
+}
+
+/* =========================================
+   3. EL REGALO (CAJA Y TAPA)
+   ========================================= */
+
+.regalo {
+    position: absolute;
+    /* Posicionamiento inicial en el centro exacto */
+    top: 50%;
+    left: 50%;
+    /* El transform inicial es CRUCIAL para el centrado */
+    transform: translate(-50%, -50%);
+    
+    width: 280px; 
+    height: 280px;
     cursor: pointer;
     z-index: 50;
-    animation: flotar 3s ease-in-out infinite;
+    
+    /* Aplicamos la animación */
+    animation: flotarRegalo 3s ease-in-out infinite;
     transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
 }
 
 @keyframes flotar {
-    0%, 100% { transform: translateY(0) rotate(0); }
-    50% { transform: translateY(-20px) rotate(1deg); }
+    0%, 100% { 
+        transform: translate(-50%, -50%) rotate(0deg); 
+    }
+    50% { 
+        /* Solo variamos ligeramente el eje Y sin romper el centro */
+        transform: translate(-50%, -55%) rotate(1deg); 
+    }
 }
-
 .caja-base {
     position: absolute;
     bottom: 0;
@@ -70,7 +135,7 @@ body {
     height: 220px;
     background: linear-gradient(135deg, var(--color-caja), #c9184a);
     border-radius: 0 0 15px 15px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 -8px 20px rgba(0,0,0,0.3);
+    box-shadow: var(--shadow-heavy), inset 0 -8px 20px rgba(0,0,0,0.3);
     transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s 0.2s;
 }
 
@@ -87,7 +152,6 @@ body {
     transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.6s 0.2s;
 }
 
-/* Lazos del regalo */
 .lazo-v {
     position: absolute;
     width: 45px;
@@ -108,7 +172,9 @@ body {
     box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
 }
 
-/* --- CONTENEDOR DE CARTAS (EMERGENCIA SUAVE) --- */
+/* =========================================
+   4. CONTENEDOR DE CARTAS Y MENSAJES
+   ========================================= */
 .contenedor-cartas {
     position: absolute;
     top: 50%;
@@ -116,20 +182,40 @@ body {
     transform: translate(-50%, -50%) scale(0);
     opacity: 0;
     visibility: hidden;
-    /* Delay preciso: espera a que la tapa se levante lo suficiente */
-    transition: transform 1.2s cubic-bezier(0.17, 0.89, 0.32, 1.28) 0.3s, 
-                opacity 0.7s ease 0.3s;
     z-index: 100;
+    
+    /* Flexbox vertical para apilar elementos */
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    width: 90%;
+    max-width: 400px;
+    /* Este GAP es el que evita que se peguen */
+    gap: 20px; 
+    pointer-events: none;
+    transition: all 0.7s cubic-bezier(0.17, 0.89, 0.32, 1.28);
+}
+
+/* Cuando el body tiene la clase abierto, centramos el contenedor */
+body.abierto .contenedor-cartas {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .stack-cartas {
     position: relative;
     width: 320px;
-    height: 440px;
+    height: 400px; 
+    margin: 0; /* Quitamos márgenes manuales */
     perspective: 1200px;
+    pointer-events: auto;
+    transition: all 0.3s ease;
+}
+
+.stack-cartas.oculto {
+    display: none !important;
 }
 
 .hoja-libro {
@@ -147,6 +233,7 @@ body {
     border: 1px solid rgba(255, 77, 109, 0.2);
     cursor: pointer;
     user-select: none;
+    pointer-events: auto;
     transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s;
 }
 
@@ -164,7 +251,68 @@ body {
     margin: 0;
 }
 
-/* --- ANIMACIONES DE APERTURA --- */
+/* =========================================
+   5. ELEMENTOS FINALES (GIF Y HINT)
+   ========================================= */
+.gif-final {
+    display: none; 
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; 
+    width: 100%;
+    /* Elimina o comenta el max-width de aquí */
+    /* max-width: 250px; */ 
+}
+
+.gif-final.mostrar {
+    display: flex;
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+}
+
+.gif-final img {
+    width: 250px; /* Aquí controlas el tamaño del GIF */
+    height: auto;
+    border-radius: 20px;
+    border: 4px solid white;
+    box-shadow: 0 0 30px rgba(255, 77, 109, 0.5);
+}
+
+.tap-hint {
+    margin-top: 40px;
+    color: #ffccd5;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    text-align: center;
+    animation: latido 2s infinite;
+    transition: all 0.5s ease;
+}
+
+/* Ajuste para que el texto final no flote a cualquier lado */
+.tap-hint.final {
+    order: 0; 
+    margin: 15px 0; 
+    /* Usamos 'vw' para que la letra se adapte al ancho de la pantalla */
+    font-size: clamp(1.8rem, 8vw, 2.8rem); 
+    font-family: 'Dancing Script', cursive;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(255, 77, 109, 1);
+    animation: latido 2s infinite;
+    
+    /* En lugar de nowrap, usamos center para que si llega a romperse, 
+       se vea estético */
+    text-align: center;
+    width: 90vw; /* Ocupa casi todo el ancho pero con aire a los lados */
+    max-width: 500px; 
+}
+
+/* =========================================
+   6. ANIMACIONES Y ESTADOS (BODY ABIERTO)
+   ========================================= */
 body.abierto .tapa {
     transform: translateY(-500px) rotate(-25deg) scale(0.7);
     opacity: 0;
@@ -181,20 +329,14 @@ body.abierto .contenedor-cartas {
     transform: translate(-50%, -50%) scale(1);
 }
 
-/* --- EFECTO SALIDA DE CARTA --- */
 .carta-fuera {
     transform: translateY(-160vh) rotate(-15deg) scale(0.5) !important;
     opacity: 0 !important;
 }
 
-.tap-hint {
-    margin-top: 40px;
-    color: #ffccd5;
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    animation: latido 2s infinite;
+@keyframes flotar {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-20px) rotate(1deg); }
 }
 
 @keyframes latido {
@@ -202,7 +344,6 @@ body.abierto .contenedor-cartas {
     50% { opacity: 1; transform: scale(1.05); }
 }
 
-/* --- PARTÍCULAS --- */
 .particula {
     position: absolute;
     pointer-events: none;
@@ -216,139 +357,100 @@ body.abierto .contenedor-cartas {
     100% { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.5); opacity: 0; }
 }
 
-/* --- RESPONSIVE --- */
+/* =========================================
+   7. RESPONSIVE DESIGN
+   ========================================= */
+/* --- NIVEL 1: MÓVILES (Ancho de pantalla) --- */
 @media (max-width: 450px) {
-    .stack-cartas { width: 290px; height: 400px; }
-    .regalo { width: 220px; height: 220px; }
-    .tapa { width: 250px; }
-    .hoja-libro h1 { font-size: 2rem; }
-}
-/* --- ESTILOS DEL GIF FINAL --- */
-.gif-final {
-    position: absolute;
-    /* Lo centramos un poco más arriba para que el texto quepa debajo */
-    top: 45%; 
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0); /* Empieza oculto y pequeño */
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto pop */
-    z-index: 10;
-    width: 250px; /* Tamaño del GIF */
-}
-
-/* Cuando JS añade esta clase, el GIF aparece */
-.gif-final.mostrar {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.gif-final img {
-    width: 100%;
-    border-radius: 20px;
-    border: 4px solid white;
-    box-shadow: 0 0 30px rgba(255, 77, 109, 0.6); /* Brillo rosa */
-}
-
-/* --- AJUSTE DEL MENSAJE FINAL --- */
-.tap-hint {
-    transition: all 0.6s ease;
-}
-
-/* Esta clase la pondrá el JS al terminar las notas */
-.tap-hint.final {
-    transform: translateY(160px); /* Baja el texto para no tapar el GIF */
-    font-family: 'Dancing Script', cursive;
-    font-size: 2rem;
-    color: #ffccd5;
-    text-shadow: 0 0 15px rgba(255, 77, 109, 0.8);
-    animation: none; /* Quitamos el latido para que sea un mensaje fijo */
-}
-
-/* --- RESPONSIVE EXTRA PARA EL GIF --- */
-@media (max-width: 450px) {
+    .stack-cartas { 
+        width: 280px; 
+        height: 380px; 
+    }
+    .regalo { 
+        width: 200px; 
+        height: 200px; 
+    }
+    .tapa { 
+        width: 230px; 
+    }
+    .hoja-libro h1 { 
+        font-size: 1.8rem; 
+    }
+    .hoja-libro p {
+        font-size: 0.95rem;
+    }
     .gif-final {
-        width: 200px; /* Más pequeño en móviles */
-        top: 42%;
-    }
-    .tap-hint.final {
-        transform: translateY(130px);
-        font-size: 1.6rem;
+        width: 180px; /* Tamaño ideal para móvil */
     }
 }
-/* Asegura que el regalo regrese suavemente */
-.regalo {
-    transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
+
+/* --- NIVEL 2: PANTALLAS BAJAS (Laptops o Celulares horizontales) --- */
+@media (max-height: 750px) {
+    .contenedor-cartas {
+        gap: 10px; /* Reduce espacio para que no se amontonen */
+    }
+    .stack-cartas { 
+        height: 320px; 
+    }
+    .hoja-libro h1 { 
+        font-size: 1.7rem; 
+        margin-bottom: 5px;
+    }
+    .gif-final { 
+        width: 160px; 
+    }
+    .tap-hint.final { 
+        font-size: 1.6rem; 
+    }
 }
 
-.caja-base, .tapa {
-    /* Añadimos transiciones para que el regreso no sea instantáneo */
-    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s;
+/* --- NIVEL 3: PANTALLAS MUY BAJAS (Ajuste crítico para que nada choque) --- */
+@media (max-height: 600px) {
+    .stack-cartas { 
+        height: 260px; 
+    }
+    .gif-final { 
+        width: 130px; 
+    }
+    .btn-reset {
+        padding: 8px 15px;
+        font-size: 0.8rem;
+        margin-top: 5px;
+    }
+    .tap-hint.final { 
+        font-size: 1.4rem; 
+    }
 }
 
-/* El contenedor de cartas debe desaparecer suavemente al reiniciar */
-.contenedor-cartas {
-    transition: transform 0.8s ease, opacity 0.5s ease;
+
+/* Definición de la animación */
+@keyframes entradaSuave {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
-/* Estilo del botón de reinicio */
+/* Aplicamos a los elementos del final */
+.gif-final.mostrar img,
+.tap-hint.final,
 .btn-reset {
-    margin-top: 20px;
-    padding: 12px 25px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50px;
-    color: white;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    display: block;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    opacity: 0; /* Empiezan invisibles */
+    animation: entradaSuave 0.8s ease-out forwards;
 }
 
-.btn-reset:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
-    border-color: white;
+/* Desfase de tiempo para que aparezcan uno tras otro */
+.gif-final.mostrar img {
+    animation-delay: 0.2s;
 }
 
-.btn-reset:active {
-    transform: translateY(0);
+.tap-hint.final {
+    animation-delay: 0.6s; /* Aparece un poco después que el GIF */
 }
 
-/* 1. Aseguramos que el contenedor del GIF no bloquee nada si no está activo */
-.gif-final {
-    pointer-events: none; /* Crucial: ignora clics por defecto */
-    z-index: 1000 !important; /* Lo ponemos muy arriba */
-}
-
-/* 2. Cuando el GIF se muestra, permitimos clics en él */
-.gif-final.mostrar {
-    pointer-events: auto !important;
-}
-
-/* 3. El botón debe ser la prioridad máxima */
 .btn-reset {
-    position: relative;
-    z-index: 1001 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
-}
-
-/* 4. Evitamos que el contenedor de cartas bloquee el botón al final */
-.contenedor-cartas {
-    pointer-events: none; /* Esto evita que el área de las cartas "tape" el botón */
-}
-
-/* Pero permitimos clics solo en las cartas individuales */
-.hoja-libro {
-    pointer-events: auto;
+    animation-delay: 1s; /* El botón es el último en aparecer */
 }
