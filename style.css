@@ -1,354 +1,243 @@
-/* --- CONFIGURACIÓN Y VARIABLES --- */
 :root {
-    --color-caja: #ff4d6d;
-    --color-tapa: #ff758f;
-    --color-lazo: #ffffff;
-    --aura-pink: #ff0055;
-    --aura-purple: #bc13fe;
-    --fondo-oscuro: #120c17;
-}
-
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
+    --bg-dark: #0a0a0c;
+    --card-bg: rgba(20, 20, 25, 0.95);
+    --accent: #d4af37;
+    --pink: #ff4d6d;
 }
 
 body {
     margin: 0;
     height: 100vh;
+    background: var(--bg-dark);
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at center, #2d1b33 0%, var(--fondo-oscuro) 100%);
-    font-family: 'Poppins', sans-serif;
-    overflow: hidden;
-    touch-action: none;
-}
-
-/* --- BOTÓN BACK --- */
-.btn-back {
-    position: fixed;
-    top: 25px;
-    left: 25px;
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 50px;
-    text-decoration: none;
-    transition: 0.4s ease;
-}
-
-.mini-logo-btn { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
-.btn-back .text { color: white; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
-
-/* --- DISEÑO DEL REGALO (SÚPER GRANDE) --- */
-.regalo {
-    position: relative;
-    width: 280px; /* Tamaño aumentado */
-    height: 280px; /* Tamaño aumentado */
-    cursor: pointer;
-    z-index: 50;
-    animation: flotar 3s ease-in-out infinite;
-    transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
-}
-
-@keyframes flotar {
-    0%, 100% { transform: translateY(0) rotate(0); }
-    50% { transform: translateY(-20px) rotate(1deg); }
-}
-
-.caja-base {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 220px;
-    background: linear-gradient(135deg, var(--color-caja), #c9184a);
-    border-radius: 0 0 15px 15px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 -8px 20px rgba(0,0,0,0.3);
-    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s 0.2s;
-}
-
-.tapa {
-    position: absolute;
-    top: 0;
-    left: -15px;
-    width: 310px;
-    height: 70px;
-    background: var(--color-tapa);
-    border-radius: 12px;
-    z-index: 10;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.6s 0.2s;
-}
-
-/* Lazos del regalo */
-.lazo-v {
-    position: absolute;
-    width: 45px;
-    height: 100%;
-    background: white;
-    left: 50%;
-    transform: translateX(-50%);
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
-}
-
-.lazo-h {
-    position: absolute;
-    width: 100%;
-    height: 45px;
-    top: 55%;
-    transform: translateY(-50%);
-    background: white;
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
-}
-
-/* --- CONTENEDOR DE CARTAS (EMERGENCIA SUAVE) --- */
-.contenedor-cartas {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    opacity: 0;
-    visibility: hidden;
-    /* Delay preciso: espera a que la tapa se levante lo suficiente */
-    transition: transform 1.2s cubic-bezier(0.17, 0.89, 0.32, 1.28) 0.3s, 
-                opacity 0.7s ease 0.3s;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.stack-cartas {
-    position: relative;
-    width: 320px;
-    height: 440px;
-    perspective: 1200px;
-}
-
-.hoja-libro {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background: #fffafa;
-    padding: 40px;
-    border-radius: 25px;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 30px rgba(255, 77, 109, 0.15);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    border: 1px solid rgba(255, 77, 109, 0.2);
-    cursor: pointer;
-    user-select: none;
-    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s;
-}
-
-.hoja-libro h1 {
-    font-family: 'Dancing Script', cursive;
-    color: #d90429;
-    font-size: 2.5rem;
-    margin: 0 0 15px 0;
-}
-
-.hoja-libro p {
-    color: #333;
-    font-size: 1.1rem;
-    line-height: 1.7;
-    margin: 0;
-}
-
-/* --- ANIMACIONES DE APERTURA --- */
-body.abierto .tapa {
-    transform: translateY(-500px) rotate(-25deg) scale(0.7);
-    opacity: 0;
-}
-
-body.abierto .caja-base {
-    transform: translateY(400px) scale(0.8);
-    opacity: 0;
-}
-
-body.abierto .contenedor-cartas {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-/* --- EFECTO SALIDA DE CARTA --- */
-.carta-fuera {
-    transform: translateY(-160vh) rotate(-15deg) scale(0.5) !important;
-    opacity: 0 !important;
-}
-
-.tap-hint {
-    margin-top: 40px;
-    color: #ffccd5;
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 1.5px;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-    animation: latido 2s infinite;
-}
-
-@keyframes latido {
-    0%, 100% { opacity: 0.6; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.05); }
-}
-
-/* --- PARTÍCULAS --- */
-.particula {
-    position: absolute;
-    pointer-events: none;
-    z-index: 200;
-    animation: volar 2.5s ease-out forwards;
-}
-
-@keyframes volar {
-    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-    20% { opacity: 1; }
-    100% { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.5); opacity: 0; }
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 450px) {
-    .stack-cartas { width: 290px; height: 400px; }
-    .regalo { width: 220px; height: 220px; }
-    .tapa { width: 250px; }
-    .hoja-libro h1 { font-size: 2rem; }
-}
-/* --- ESTILOS DEL GIF FINAL --- */
-.gif-final {
-    position: absolute;
-    /* Lo centramos un poco más arriba para que el texto quepa debajo */
-    top: 45%; 
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0); /* Empieza oculto y pequeño */
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto pop */
-    z-index: 10;
-    width: 250px; /* Tamaño del GIF */
-}
-
-/* Cuando JS añade esta clase, el GIF aparece */
-.gif-final.mostrar {
-    opacity: 1;
-    visibility: visible;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.gif-final img {
-    width: 100%;
-    border-radius: 20px;
-    border: 4px solid white;
-    box-shadow: 0 0 30px rgba(255, 77, 109, 0.6); /* Brillo rosa */
-}
-
-/* --- AJUSTE DEL MENSAJE FINAL --- */
-.tap-hint {
-    transition: all 0.6s ease;
-}
-
-/* Esta clase la pondrá el JS al terminar las notas */
-.tap-hint.final {
-    transform: translateY(160px); /* Baja el texto para no tapar el GIF */
-    font-family: 'Dancing Script', cursive;
-    font-size: 2rem;
-    color: #ffccd5;
-    text-shadow: 0 0 15px rgba(255, 77, 109, 0.8);
-    animation: none; /* Quitamos el latido para que sea un mensaje fijo */
-}
-
-/* --- RESPONSIVE EXTRA PARA EL GIF --- */
-@media (max-width: 450px) {
-    .gif-final {
-        width: 200px; /* Más pequeño en móviles */
-        top: 42%;
-    }
-    .tap-hint.final {
-        transform: translateY(130px);
-        font-size: 1.6rem;
-    }
-}
-/* Asegura que el regalo regrese suavemente */
-.regalo {
-    transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
-}
-
-.caja-base, .tapa {
-    /* Añadimos transiciones para que el regreso no sea instantáneo */
-    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s;
-}
-
-/* El contenedor de cartas debe desaparecer suavemente al reiniciar */
-.contenedor-cartas {
-    transition: transform 0.8s ease, opacity 0.5s ease;
-}
-/* Estilo del botón de reinicio */
-.btn-reset {
-    margin-top: 20px;
-    padding: 12px 25px;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    border-radius: 50px;
+    font-family: 'Montserrat', sans-serif;
     color: white;
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    display: block;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    overflow: hidden;
 }
 
-.btn-reset:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
-    border-color: white;
+.main-card {
+    background: var(--card-bg);
+    width: 90%;
+    max-width: 400px;
+    padding: 40px 20px;
+    border-radius: 40px;
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
 }
 
-.btn-reset:active {
-    transform: translateY(0);
+.reveal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    margin: 0;
+    letter-spacing: 4px;
+    background: linear-gradient(to bottom, #fff, #d4af37);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-/* 1. Aseguramos que el contenedor del GIF no bloquee nada si no está activo */
-.gif-final {
-    pointer-events: none; /* Crucial: ignora clics por defecto */
-    z-index: 1000 !important; /* Lo ponemos muy arriba */
+.divider {
+    height: 1px;
+    width: 60px;
+    background: var(--accent);
+    margin: 20px auto;
 }
 
-/* 2. Cuando el GIF se muestra, permitimos clics en él */
-.gif-final.mostrar {
-    pointer-events: auto !important;
+.gem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 30px 0;
 }
 
-/* 3. El botón debe ser la prioridad máxima */
-.btn-reset {
+/* --- ESTILOS DE GEMA Y ANIMACIONES --- */
+
+.gem-item {
+    aspect-ratio: 1;
+    border-radius: 20px;
     position: relative;
-    z-index: 1001 !important;
-    pointer-events: auto !important;
-    cursor: pointer !important;
+    overflow: hidden;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 1px solid rgba(255,255,255,0.1);
 }
 
-/* 4. Evitamos que el contenedor de cartas bloquee el botón al final */
-.contenedor-cartas {
-    pointer-events: none; /* Esto evita que el área de las cartas "tape" el botón */
+.gem-item:hover {
+    transform: scale(1.05);
+    border-color: var(--accent);
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2);
 }
 
-/* Pero permitimos clics solo en las cartas individuales */
-.hoja-libro {
-    pointer-events: auto;
+/* 1. Gema Corazón (Latido) */
+.portal-bg { background: linear-gradient(45deg, #1a0c29, #302b63); }
+.heart { 
+    font-size: 2.5rem; 
+    animation: heartBeat 1.2s infinite; 
+}
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); filter: drop-shadow(0 0 15px #ff2d55); }
+}
+
+/* 2. Gema Regalo (Tapa saltarina) */
+.gift-bg { background: linear-gradient(45deg, #ff4d6d, #800f2f); }
+.mini-regalo { position: relative; width: 40px; height: 40px; }
+.mini-caja-base { 
+    width: 100%; height: 70%; background: #fff; position: absolute; bottom: 0; 
+    border-radius: 4px; overflow: hidden;
+}
+.mini-tapa { 
+    width: 110%; height: 30%; background: #fff; position: absolute; top: 0; left: -5%; 
+    border-radius: 2px; z-index: 2; animation: lidJump 1s infinite alternate;
+}
+.mini-lazo-v { width: 8px; height: 100%; background: var(--pink); margin: 0 auto; }
+.mini-lazo-h { width: 100%; height: 8px; background: var(--pink); position: absolute; top: 50%; transform: translateY(-50%); }
+
+@keyframes lidJump {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-8px) rotate(-5deg); }
+}
+
+/* 3. Gema Partículas (Glow animado) */
+/* 3. Gema Corazón Partículas (Latido Orgánico) */
+.heart-particle-bg { 
+    background: radial-gradient(circle, #2a0000 0%, #000 100%); 
+}
+
+.mini-heart-glow {
+    width: 20px;
+    height: 20px;
+    background-color: #ff2d55;
+    position: relative;
+    transform: rotate(45deg);
+    animation: organicHeartBeat 1.4s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+    box-shadow: 0 0 20px rgba(255, 45, 85, 0.6);
+}
+
+/* Formar el corazón con los pseudo-elementos */
+.mini-heart-glow::before,
+.mini-heart-glow::after {
+    content: "";
+    width: 20px;
+    height: 20px;
+    background-color: #ff2d55;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.mini-heart-glow::before { top: -10px; left: 0; }
+.mini-heart-glow::after { left: -10px; top: 0; }
+
+@keyframes organicHeartBeat {
+    0% { transform: rotate(45deg) scale(0.95); }
+    5% { transform: rotate(45deg) scale(1.1); }
+    10% { transform: rotate(45deg) scale(1.05); }
+    15% { transform: rotate(45deg) scale(1.25); }
+    50% { transform: rotate(45deg) scale(0.95); }
+    100% { transform: rotate(45deg) scale(0.95); }
+}
+
+/* 4. Gema Noche (Rosa que crece y se encoge) */
+.night-gold-bg { 
+    background: radial-gradient(circle at center, #1a1a3a 0%, #0f0c29 100%); 
+    position: relative; /* Asegura que las estrellas no floten por fuera */
+}
+
+/* Estrellas tintineantes */
+.ms { 
+    position: absolute; 
+    width: 2px; 
+    height: 2px; 
+    background: white; 
+    border-radius: 50%; 
+    animation: twinkle 1.5s infinite alternate;
+    box-shadow: 0 0 3px white;
+}
+.ms:nth-child(1) { top: 15%; left: 20%; }
+.ms:nth-child(2) { top: 25%; right: 20%; animation-delay: 0.5s; }
+.ms:nth-child(3) { bottom: 25%; left: 30%; animation-delay: 1s; }
+
+@keyframes twinkle {
+    0% { opacity: 0.1; transform: scale(0.5); }
+    100% { opacity: 0.8; transform: scale(1.2); }
+}
+
+.mini-night-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2; /* Por encima de las estrellas */
+}
+
+.mini-rose { 
+    font-size: 1.8rem; 
+    display: inline-block;
+    animation: roseGrow 3s ease-in-out infinite;
+    /* Efecto de aura dorada más suave */
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+}
+
+@keyframes roseGrow {
+    0%, 100% { 
+        transform: scale(1); 
+        filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.3));
+    }
+    50% { 
+        transform: scale(1.2); 
+        filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.6));
+    }
+}
+
+.mini-yes-btn {
+    margin-top: 8px;
+    font-size: 0.45rem; /* Un poco más pequeño para que sea sutil */
+    background: var(--accent);
+    color: #000;
+    padding: 3px 10px;
+    border-radius: 50px; /* Bordes más redondeados tipo píldora */
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    animation: fadeInOut 3s infinite;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.6; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1); }
+}
+
+/* 5. Gema Juego (Cohete vibrante) */
+.game-neon-bg { background: #050005; border-color: var(--pink); }
+.mini-rocket { 
+    font-size: 1.8rem; 
+    animation: rocketShake 0.2s infinite; 
+}
+.game-particle {
+    position: absolute; font-size: 0.8rem;
+    animation: fallGame 1.5s infinite linear;
+}
+
+@keyframes rocketShake {
+    0% { transform: translate(0,0); }
+    50% { transform: translate(1px, -1px); }
+    100% { transform: translate(-1px, 1px); }
+}
+@keyframes fallGame {
+    0% { top: -20px; opacity: 1; }
+    100% { top: 100%; opacity: 0; }
+}
+
+footer {
+    font-size: 0.7rem;
+    letter-spacing: 3px;
+    opacity: 0.5;
+    margin-top: 20px;
 }
