@@ -1,10 +1,16 @@
+/* --- CONFIGURACIÓN Y VARIABLES --- */
 :root {
     --color-caja: #ff4d6d;
     --color-tapa: #ff758f;
     --color-lazo: #ffffff;
-    --color-glow: rgba(255, 77, 109, 0.8);
     --aura-pink: #ff0055;
     --aura-purple: #bc13fe;
+    --fondo-oscuro: #120c17;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -13,13 +19,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: radial-gradient(circle at center, #2d1b33 0%, #120c17 100%);
+    background: radial-gradient(circle at center, #2d1b33 0%, var(--fondo-oscuro) 100%);
     font-family: 'Poppins', sans-serif;
     overflow: hidden;
-    touch-action: manipulation;
+    touch-action: none;
 }
 
-/* --- BOTÓN AURAGEM --- */
+/* --- BOTÓN BACK --- */
 .btn-back {
     position: fixed;
     top: 25px;
@@ -35,140 +41,165 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50px;
     text-decoration: none;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: 0.4s ease;
 }
 
-.btn-back:hover, .btn-back:active {
-    transform: scale(1.05);
-    background: rgba(255, 255, 255, 0.15);
-    border-color: var(--aura-pink);
-}
+.mini-logo-btn { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+.btn-back .text { color: white; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; }
 
-.mini-logo-btn {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    object-fit: cover;
-    background: linear-gradient(45deg, var(--aura-pink), var(--aura-purple)); 
-    border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-.btn-back .text {
-    color: white;
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-/* --- ESCENA Y REGALO --- */
-.escena {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-}
-
+/* --- DISEÑO DEL REGALO (SÚPER GRANDE) --- */
 .regalo {
     position: relative;
-    width: 140px;
-    height: 140px;
+    width: 280px; /* Tamaño aumentado */
+    height: 280px; /* Tamaño aumentado */
     cursor: pointer;
     z-index: 50;
     animation: flotar 3s ease-in-out infinite;
-    transition: all 0.6s ease;
+    transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
 }
 
 @keyframes flotar {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(3deg); }
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-20px) rotate(1deg); }
 }
 
 .caja-base {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 120px;
+    height: 220px;
     background: linear-gradient(135deg, var(--color-caja), #c9184a);
-    border-radius: 0 0 8px 8px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-    z-index: 1; 
+    border-radius: 0 0 15px 15px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6), inset 0 -8px 20px rgba(0,0,0,0.3);
+    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s 0.2s;
 }
 
 .tapa {
     position: absolute;
     top: 0;
-    left: -10px;
-    width: 160px;
-    height: 40px;
+    left: -15px;
+    width: 310px;
+    height: 70px;
     background: var(--color-tapa);
-    border-radius: 8px;
+    border-radius: 12px;
     z-index: 10;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    transition: 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.6s 0.2s;
 }
 
+/* Lazos del regalo */
 .lazo-v {
     position: absolute;
-    width: 20px;
+    width: 45px;
     height: 100%;
-    background: var(--color-lazo);
+    background: white;
     left: 50%;
     transform: translateX(-50%);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
 }
 
 .lazo-h {
     position: absolute;
     width: 100%;
-    height: 20px;
-    top: 50%;
+    height: 45px;
+    top: 55%;
     transform: translateY(-50%);
-    background: var(--color-lazo);
+    background: white;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
 }
 
-/* --- ESTADO ABIERTO --- */
-.mensaje {
+/* --- CONTENEDOR DE CARTAS (EMERGENCIA SUAVE) --- */
+.contenedor-cartas {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    visibility: hidden;
+    /* Delay preciso: espera a que la tapa se levante lo suficiente */
+    transition: transform 1.2s cubic-bezier(0.17, 0.89, 0.32, 1.28) 0.3s, 
+                opacity 0.7s ease 0.3s;
     z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stack-cartas {
+    position: relative;
+    width: 320px;
+    height: 440px;
+    perspective: 1200px;
+}
+
+.hoja-libro {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #fffafa;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 30px rgba(255, 77, 109, 0.15);
     text-align: center;
-    color: white;
-    opacity: 0;
-    transform: scale(0);
-    transition: 1s all cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    width: 85%;
-    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid rgba(255, 77, 109, 0.2);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.6s;
 }
 
-.mensaje h1 { 
+.hoja-libro h1 {
     font-family: 'Dancing Script', cursive;
-    font-size: 3rem; 
-    margin: 0 0 10px 0;
-    color: #ffb3c1;
-    text-shadow: 0 0 20px var(--color-glow);
+    color: #d90429;
+    font-size: 2.5rem;
+    margin: 0 0 15px 0;
 }
 
-.mensaje p { font-size: 1.2rem; margin: 0; font-weight: 300; }
+.hoja-libro p {
+    color: #333;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    margin: 0;
+}
 
-.abierto .tapa {
-    transform: translateY(-250px) rotate(-15deg) scale(0.8);
+/* --- ANIMACIONES DE APERTURA --- */
+body.abierto .tapa {
+    transform: translateY(-500px) rotate(-25deg) scale(0.7);
     opacity: 0;
 }
 
-.abierto .caja-base {
-    transform: translateY(150px) scale(0);
+body.abierto .caja-base {
+    transform: translateY(400px) scale(0.8);
     opacity: 0;
-    transition: 0.6s all ease;
 }
 
-.abierto .mensaje {
+body.abierto .contenedor-cartas {
     opacity: 1;
-    transform: scale(1);
-    pointer-events: auto;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* --- EFECTO SALIDA DE CARTA --- */
+.carta-fuera {
+    transform: translateY(-160vh) rotate(-15deg) scale(0.5) !important;
+    opacity: 0 !important;
+}
+
+.tap-hint {
+    margin-top: 40px;
+    color: #ffccd5;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+    animation: latido 2s infinite;
+}
+
+@keyframes latido {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
 }
 
 /* --- PARTÍCULAS --- */
@@ -182,12 +213,142 @@ body {
 @keyframes volar {
     0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
     20% { opacity: 1; }
-    100% { transform: translate(var(--x), var(--y)) scale(1.2) rotate(var(--r)); opacity: 0; }
+    100% { transform: translate(var(--x), var(--y)) rotate(var(--r)) scale(1.5); opacity: 0; }
 }
 
-@media (max-width: 600px) {
-    .mensaje h1 { font-size: 2.5rem; }
-    .mensaje p { font-size: 1rem; }
-    .regalo { width: 120px; height: 120px; }
-    .tapa { width: 140px; }
+/* --- RESPONSIVE --- */
+@media (max-width: 450px) {
+    .stack-cartas { width: 290px; height: 400px; }
+    .regalo { width: 220px; height: 220px; }
+    .tapa { width: 250px; }
+    .hoja-libro h1 { font-size: 2rem; }
+}
+/* --- ESTILOS DEL GIF FINAL --- */
+.gif-final {
+    position: absolute;
+    /* Lo centramos un poco más arriba para que el texto quepa debajo */
+    top: 45%; 
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0); /* Empieza oculto y pequeño */
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efecto pop */
+    z-index: 10;
+    width: 250px; /* Tamaño del GIF */
+}
+
+/* Cuando JS añade esta clase, el GIF aparece */
+.gif-final.mostrar {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.gif-final img {
+    width: 100%;
+    border-radius: 20px;
+    border: 4px solid white;
+    box-shadow: 0 0 30px rgba(255, 77, 109, 0.6); /* Brillo rosa */
+}
+
+/* --- AJUSTE DEL MENSAJE FINAL --- */
+.tap-hint {
+    transition: all 0.6s ease;
+}
+
+/* Esta clase la pondrá el JS al terminar las notas */
+.tap-hint.final {
+    transform: translateY(160px); /* Baja el texto para no tapar el GIF */
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: #ffccd5;
+    text-shadow: 0 0 15px rgba(255, 77, 109, 0.8);
+    animation: none; /* Quitamos el latido para que sea un mensaje fijo */
+}
+
+/* --- RESPONSIVE EXTRA PARA EL GIF --- */
+@media (max-width: 450px) {
+    .gif-final {
+        width: 200px; /* Más pequeño en móviles */
+        top: 42%;
+    }
+    .tap-hint.final {
+        transform: translateY(130px);
+        font-size: 1.6rem;
+    }
+}
+/* Asegura que el regalo regrese suavemente */
+.regalo {
+    transition: all 1s cubic-bezier(0.6, 0, 0.4, 1);
+}
+
+.caja-base, .tapa {
+    /* Añadimos transiciones para que el regreso no sea instantáneo */
+    transition: transform 1s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.8s;
+}
+
+/* El contenedor de cartas debe desaparecer suavemente al reiniciar */
+.contenedor-cartas {
+    transition: transform 0.8s ease, opacity 0.5s ease;
+}
+/* Estilo del botón de reinicio */
+.btn-reset {
+    margin-top: 20px;
+    padding: 12px 25px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    display: block;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btn-reset:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 77, 109, 0.4);
+    border-color: white;
+}
+
+.btn-reset:active {
+    transform: translateY(0);
+}
+
+/* 1. Aseguramos que el contenedor del GIF no bloquee nada si no está activo */
+.gif-final {
+    pointer-events: none; /* Crucial: ignora clics por defecto */
+    z-index: 1000 !important; /* Lo ponemos muy arriba */
+}
+
+/* 2. Cuando el GIF se muestra, permitimos clics en él */
+.gif-final.mostrar {
+    pointer-events: auto !important;
+}
+
+/* 3. El botón debe ser la prioridad máxima */
+.btn-reset {
+    position: relative;
+    z-index: 1001 !important;
+    pointer-events: auto !important;
+    cursor: pointer !important;
+}
+
+/* 4. Evitamos que el contenedor de cartas bloquee el botón al final */
+.contenedor-cartas {
+    pointer-events: none; /* Esto evita que el área de las cartas "tape" el botón */
+}
+
+/* Pero permitimos clics solo en las cartas individuales */
+.hoja-libro {
+    pointer-events: auto;
 }

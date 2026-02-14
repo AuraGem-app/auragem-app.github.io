@@ -2,9 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Un Regalo para Ti</title>
-    
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,8 +14,8 @@
         <span class="text">AuraGem</span>
     </a>
 
-    <div class="escena" id="escena">
-        <div class="regalo" id="regalo" onclick="abrirRegalo()" ontouchstart="abrirRegalo()">
+    <div class="escena">
+        <div class="regalo" id="regalo-box" onclick="abrirRegalo()">
             <div class="tapa">
                 <div class="lazo-v"></div>
             </div>
@@ -26,11 +25,23 @@
             </div>
         </div>
 
-        <div class="mensaje" id="texto">
-            <h1>¡Eres muy especial para mi! ❤️</h1>
-            <p>Gracias por hacer mi mundo mucho mejor.</p>
+        <div class="contenedor-cartas" id="contenedor-cartas">
+            <div class="stack-cartas" id="stack"></div>
+            <div class="tap-hint" id="hint">Toca la carta para ver más ❤️</div>
+        </div>
+
+        <div id="final-gif-container" class="gif-final">
+            <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHppbHFkdDJ5emQwNDI2NHg3mXF6NGgycXR6cXpiMzV1aWJkcXh6dyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/rT7WPCciy8oETxLmUV/giphy.gif" alt="Regalo Final">
+            
+            <button class="btn-reset" onclick="reiniciarExperiencia()">
+                Ver de nuevo ✨
+            </button>
         </div>
     </div>
+
+    <audio id="musica-regalo" loop>
+        <source src="musica.mp3" type="audio/mpeg">
+    </audio>
 
     <script src="script.js"></script>
 </body>
